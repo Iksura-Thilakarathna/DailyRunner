@@ -29,7 +29,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -287,7 +287,7 @@ fun HistoryTripCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Divider(color = MaterialTheme.colorScheme.surfaceVariant)
+            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
 
             Spacer(modifier = Modifier.height(10.dp))
 

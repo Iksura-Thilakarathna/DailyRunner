@@ -24,12 +24,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.HourglassEmpty
-import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.AlertDialog
@@ -37,7 +37,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -83,7 +83,6 @@ fun WeeklyChequesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val haptic = LocalHapticFeedback.current
 
     LaunchedEffect(Unit) {
         viewModel.messageEvent.collectLatest { msg ->
@@ -137,7 +136,7 @@ fun WeeklyChequesScreen(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.ReceiptLong,
+                    imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(28.dp)
@@ -443,7 +442,7 @@ fun WeeklyChequeCard(
                 Column(
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
-                    Divider(color = MaterialTheme.colorScheme.surfaceVariant)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
 
                     Spacer(modifier = Modifier.height(12.dp))
 

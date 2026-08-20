@@ -7,9 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.ReceiptLong
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,7 +45,7 @@ import com.dailyrunner.drivertracker.ui.viewmodel.WeeklyChequesViewModel
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     object Dashboard : Screen("dashboard", "Dashboard", Icons.Default.DirectionsCar)
-    object Cheques : Screen("cheques", "Cheques", Icons.Default.ReceiptLong)
+    object Cheques : Screen("cheques", "Cheques", Icons.AutoMirrored.Filled.ReceiptLong)
     object History : Screen("history", "History", Icons.Default.History)
     object Settings : Screen("settings", "Settings", Icons.Default.Settings)
 }
