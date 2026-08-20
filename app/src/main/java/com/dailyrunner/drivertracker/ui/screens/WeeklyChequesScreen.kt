@@ -56,6 +56,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -81,6 +83,7 @@ fun WeeklyChequesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
 
     LaunchedEffect(Unit) {
         viewModel.messageEvent.collectLatest { msg ->
@@ -366,6 +369,7 @@ fun WeeklyChequeCard(
 
             Spacer(modifier = Modifier.height(14.dp))
 
+            val cardHaptic = LocalHapticFeedback.current
             // Interactive Payment Status Button
             if (summary.isPaid) {
                 // Paid Badge Button
@@ -373,7 +377,10 @@ fun WeeklyChequeCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
-                        .clickable { onTogglePayment() },
+                        .clickable {
+                            cardHaptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onTogglePayment()
+                        },
                     color = PaidGreenBg
                 ) {
                     Row(
@@ -399,7 +406,10 @@ fun WeeklyChequeCard(
             } else {
                 // Unpaid Outlined Button
                 OutlinedButton(
-                    onClick = { onTogglePayment() },
+                    onClick = {
+                        cardHaptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onTogglePayment()
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),

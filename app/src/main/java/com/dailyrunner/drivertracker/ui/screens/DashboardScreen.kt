@@ -74,6 +74,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import com.dailyrunner.drivertracker.ui.theme.PaidGreen
 import com.dailyrunner.drivertracker.ui.theme.PaidGreenBg
 import com.dailyrunner.drivertracker.ui.viewmodel.DashboardUiState
@@ -91,6 +93,7 @@ fun DashboardScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val focusManager = LocalFocusManager.current
+    val haptic = LocalHapticFeedback.current
 
     LaunchedEffect(Unit) {
         viewModel.messageEvent.collectLatest { msg ->
@@ -377,7 +380,10 @@ fun DashboardScreen(
                                 quickChips.forEach { chipName ->
                                     InputChip(
                                         selected = false,
-                                        onClick = { viewModel.appendDestinationChip(chipName) },
+                                        onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                            viewModel.appendDestinationChip(chipName)
+                                        },
                                         label = { Text("+ $chipName") },
                                         leadingIcon = {
                                             Icon(
@@ -413,6 +419,7 @@ fun DashboardScreen(
                 // Big Driver Save Action Button (56dp minimum height)
                 Button(
                     onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         focusManager.clearFocus()
                         viewModel.saveTrip()
                     },
