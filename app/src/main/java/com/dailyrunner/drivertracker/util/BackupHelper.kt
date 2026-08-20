@@ -37,12 +37,25 @@ object BackupHelper {
 
     fun exportToCsv(trips: List<DailyTrip>, outputStream: OutputStream) {
         val sb = StringBuilder()
-        sb.append("Date,Start KM,End KM,Total KM,Rate Per KM,Total Earnings (Rs),Destinations,Is No Work,Notes\n")
+        // Write UTF-8 BOM for Excel compatibility
+        sb.append("\uFEFF")
+        sb.append("Date,Day of Week,Start KM,End KM,Total KM,Rate Per KM (LKR),Total Earnings (LKR),Destinations / Route,Is Off Day,Notes\n")
+        
+        var sumKm = 0.0
+        var sumEarnings = 0.0
+
         for (t in trips) {
+            val dayOfWeek = PayPeriodUtils.formatDateForDisplay(t.date)
             val dest = t.destinations.replace("\"", "\"\"")
             val notes = (t.notes ?: "").replace("\"", "\"\"")
-            sb.append("\"${t.date}\",${t.startKm},${t.endKm},${t.totalKm},${t.ratePerKm},${t.totalEarnings},\"$dest\",${t.isNoWork},\"$notes\"\n")
+            sb.append("\"${t.date}\",\"$dayOfWeek\",${t.startKm},${t.endKm},${t.totalKm},${t.ratePerKm},${t.totalEarnings},\"$dest\",${if (t.isNoWork) "Yes" else "No"},\"$notes\"\n")
+            sumKm += t.totalKm
+            sumEarnings += t.totalEarnings
         }
+
+        // Summary footer row
+        sb.append("\n\"SUMMARY TOTALS\",,,\"Total Trips: ${trips.size}\",$sumKm,,$sumEarnings,,,\n")
+
         outputStream.write(sb.toString().toByteArray(Charsets.UTF_8))
         outputStream.flush()
     }
