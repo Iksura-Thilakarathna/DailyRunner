@@ -18,6 +18,9 @@ import java.io.OutputStream
 data class SettingsUiState(
     val ratePerKmText: String = "104.0",
     val currentRatePerKm: Double = 104.0,
+    val totalLifetimeKm: Double = 0.0,
+    val totalLifetimeEarnings: Double = 0.0,
+    val totalDaysWorked: Int = 0,
     val isExporting: Boolean = false,
     val isImporting: Boolean = false
 )
@@ -38,6 +41,18 @@ class SettingsViewModel(
                 _uiState.value = _uiState.value.copy(
                     currentRatePerKm = rate,
                     ratePerKmText = if (rate % 1.0 == 0.0) rate.toLong().toString() else rate.toString()
+                )
+            }
+        }
+        viewModelScope.launch {
+            repository.getAllTrips().collectLatest { trips ->
+                val sumKm = trips.sumOf { it.totalKm }
+                val sumEarnings = trips.sumOf { it.totalEarnings }
+                val days = trips.count { !it.isNoWork }
+                _uiState.value = _uiState.value.copy(
+                    totalLifetimeKm = sumKm,
+                    totalLifetimeEarnings = sumEarnings,
+                    totalDaysWorked = days
                 )
             }
         }
