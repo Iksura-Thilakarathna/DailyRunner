@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -59,6 +60,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -121,6 +124,9 @@ fun WeeklyChequesScreen(
             }
         )
     }
+
+    val clipboardManager = LocalClipboardManager.current
+    val haptic = LocalHapticFeedback.current
 
     Column(
         modifier = Modifier
@@ -233,6 +239,12 @@ fun WeeklyChequesScreen(
                             }
                             val shareIntent = Intent.createChooser(sendIntent, "Share Cheque Summary")
                             context.startActivity(shareIntent)
+                        },
+                        onCopy = {
+                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            val text = viewModel.buildShareSummaryText(cheque)
+                            clipboardManager.setText(AnnotatedString(text))
+                            // Note: Snackbar notification for copy
                         }
                     )
                 }
@@ -247,7 +259,8 @@ fun WeeklyChequeCard(
     isExpanded: Boolean,
     onToggleExpand: () -> Unit,
     onTogglePayment: () -> Unit,
-    onShare: () -> Unit
+    onShare: () -> Unit,
+    onCopy: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -282,6 +295,25 @@ fun WeeklyChequeCard(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Copy Summary Button
+                    Surface(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable { onCopy() },
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                    ) {
+                        Box(modifier = Modifier.padding(8.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.ContentCopy,
+                                contentDescription = "Copy Summary",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     // Share Button
                     Surface(
                         modifier = Modifier
