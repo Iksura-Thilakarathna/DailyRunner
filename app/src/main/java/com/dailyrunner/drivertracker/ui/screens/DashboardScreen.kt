@@ -28,6 +28,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddLocation
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DirectionsCar
@@ -346,6 +348,20 @@ fun DashboardScreen(
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.primary
                                     )
+                                },
+                                trailingIcon = {
+                                    if (uiState.destinationsText.isNotBlank()) {
+                                        IconButton(onClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                            viewModel.onDestinationsChanged("")
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Clear,
+                                                contentDescription = "Clear Destinations",
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
                                 },
                                 placeholder = { Text("e.g. Colombo Fort -> Kandy Road -> Peliyagoda") },
                                 singleLine = false,
