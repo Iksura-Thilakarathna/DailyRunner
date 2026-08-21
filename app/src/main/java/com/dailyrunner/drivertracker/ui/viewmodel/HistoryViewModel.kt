@@ -21,7 +21,17 @@ data class HistoryUiState(
     val filteredTrips: List<DailyTrip> = emptyList(),
     val pendingDeleteTrip: DailyTrip? = null,
     val showDeleteConfirmDialog: Boolean = false
-)
+) {
+    val averageKmPerWorkDay: Double
+        get() {
+            val workTrips = filteredTrips.filter { !it.isNoWork }
+            if (workTrips.isEmpty()) return 0.0
+            return workTrips.sumOf { it.totalKm } / workTrips.size
+        }
+
+    val totalKmSum: Double
+        get() = filteredTrips.sumOf { it.totalKm }
+}
 
 class HistoryViewModel(
     private val repository: TripRepository
