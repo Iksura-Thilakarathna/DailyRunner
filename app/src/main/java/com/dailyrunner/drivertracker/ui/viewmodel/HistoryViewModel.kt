@@ -15,8 +15,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+enum class MonthFilter {
+    ALL,
+    THIS_MONTH,
+    LAST_MONTH
+}
+
 data class HistoryUiState(
     val searchQuery: String = "",
+    val selectedMonthFilter: MonthFilter = MonthFilter.ALL,
     val allTrips: List<DailyTrip> = emptyList(),
     val filteredTrips: List<DailyTrip> = emptyList(),
     val pendingDeleteTrip: DailyTrip? = null,
@@ -48,7 +55,7 @@ class HistoryViewModel(
             repository.getAllTrips().collectLatest { trips ->
                 _uiState.value = _uiState.value.copy(
                     allTrips = trips,
-                    filteredTrips = filterTrips(trips, _uiState.value.searchQuery)
+                    filteredTrips = filterTrips(trips, _uiState.value.searchQuery, _uiState.value.selectedMonthFilter)
                 )
             }
         }
@@ -57,14 +64,31 @@ class HistoryViewModel(
     fun onSearchQueryChanged(query: String) {
         _uiState.value = _uiState.value.copy(
             searchQuery = query,
-            filteredTrips = filterTrips(_uiState.value.allTrips, query)
+            filteredTrips = filterTrips(_uiState.value.allTrips, query, _uiState.value.selectedMonthFilter)
         )
     }
 
-    private fun filterTrips(trips: List<DailyTrip>, query: String): List<DailyTrip> {
-        if (query.isBlank()) return trips
+    fun selectMonthFilter(filter: MonthFilter) {
+        _uiState.value = _uiState.value.copy(
+            selectedMonthFilter = filter,
+            filteredTrips = filterTrips(_uiState.value.allTrips, _uiState.value.searchQuery, filter)
+        )
+    }
+
+    private fun filterTrips(trips: List<DailyTrip>, query: String, filter: MonthFilter): List<DailyTrip> {
+        val today = java.time.LocalDate.now()
+        val thisMonthPrefix = today.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM"))
+        val lastMonthPrefix = today.minusMonths(1).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM"))
+
+        val dateFiltered = when (filter) {
+            MonthFilter.ALL -> trips
+            MonthFilter.THIS_MONTH -> trips.filter { it.date.startsWith(thisMonthPrefix) }
+            MonthFilter.LAST_MONTH -> trips.filter { it.date.startsWith(lastMonthPrefix) }
+        }
+
+        if (query.isBlank()) return dateFiltered
         val q = query.trim().lowercase()
-        return trips.filter { trip ->
+        return dateFiltered.filter { trip ->
             trip.date.lowercase().contains(q) ||
             trip.destinations.lowercase().contains(q) ||
             (trip.notes?.lowercase()?.contains(q) ?: false) ||

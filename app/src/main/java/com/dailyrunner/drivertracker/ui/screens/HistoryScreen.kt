@@ -29,6 +29,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -50,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dailyrunner.drivertracker.data.model.DailyTrip
 import com.dailyrunner.drivertracker.ui.viewmodel.HistoryViewModel
+import com.dailyrunner.drivertracker.ui.viewmodel.MonthFilter
 import com.dailyrunner.drivertracker.util.PayPeriodUtils
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Locale
@@ -195,6 +198,44 @@ fun HistoryScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
         }
+
+        // Month Filter Chips Row
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            FilterChip(
+                selected = uiState.selectedMonthFilter == MonthFilter.ALL,
+                onClick = { viewModel.selectMonthFilter(MonthFilter.ALL) },
+                label = { Text("All Logs") },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+
+            FilterChip(
+                selected = uiState.selectedMonthFilter == MonthFilter.THIS_MONTH,
+                onClick = { viewModel.selectMonthFilter(MonthFilter.THIS_MONTH) },
+                label = { Text("This Month") },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+
+            FilterChip(
+                selected = uiState.selectedMonthFilter == MonthFilter.LAST_MONTH,
+                onClick = { viewModel.selectMonthFilter(MonthFilter.LAST_MONTH) },
+                label = { Text("Last Month") },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Search Bar
         OutlinedTextField(
