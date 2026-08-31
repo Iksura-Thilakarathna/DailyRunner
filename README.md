@@ -1,4 +1,4 @@
-# 🏃‍♂️ DailyRunner — Driver Mileage & Pay Tracker
+#  DailyRunner — Driver Mileage & Pay Tracker
 
 **DailyRunner** is an Android application designed to help delivery and contract drivers record their daily driving distance and calculate their earnings based on the number of kilometres they travel.
 
@@ -8,7 +8,7 @@ The application was developed using **Kotlin**, **Jetpack Compose**, and **Room 
 
 ---
 
-## 📱 Key Features
+##  Key Features
 
 * **Odometer Logging**
   Users can enter their Start KM and End KM to calculate the total distance and earnings.
@@ -42,7 +42,7 @@ The application was developed using **Kotlin**, **Jetpack Compose**, and **Room 
 
 ---
 
-## 💰 Business Rules and Calculations
+##  Business Rules and Calculations
 
 DailyRunner uses simple rules to calculate the driver's earnings.
 
@@ -96,7 +96,7 @@ All trips recorded during this period are included in the same weekly payment ca
 
 ---
 
-## 🗄️ Database
+##  Database
 
 DailyRunner uses **Room Database**, which is built on top of SQLite, to store the application data locally.
 
@@ -128,7 +128,7 @@ All data is stored locally on the user's device, so the application can work wit
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 | Technology           | Purpose                          |
 | -------------------- | -------------------------------- |
@@ -153,7 +153,7 @@ All data is stored locally on the user's device, so the application can work wit
 
 ---
 
-## 🏗️ Application Architecture
+##  Application Architecture
 
 DailyRunner follows the **MVVM (Model-View-ViewModel)** architecture pattern.
 
@@ -179,7 +179,7 @@ The application uses **Flow** and **StateFlow** to observe changes in the databa
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 DailyRunner/
@@ -208,7 +208,7 @@ DailyRunner/
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -238,14 +238,14 @@ Open the project in **Android Studio** and allow Gradle to sync the project.
 
 ---
 
-## ▶️ Running the Application
+##  Running the Application
 
 After opening the project in Android Studio:
 
 1. Connect an Android device or start an Android Emulator.
 2. Make sure USB debugging is enabled if you are using a physical device.
 3. Select the device from Android Studio.
-4. Click the **Run ▶** button.
+4. Click the **Run ** button.
 5. The DailyRunner application will be installed and launched.
 
 The application can also be installed using the Gradle command:
@@ -262,7 +262,7 @@ gradlew.bat installDebug
 
 ---
 
-## 🔨 Building the Project
+##  Building the Project
 
 ### Build Debug APK
 
@@ -290,7 +290,7 @@ app/build/outputs/apk/release/app-release.apk
 
 ---
 
-## 🔄 How the Application Works
+##  How the Application Works
 
 The basic workflow of DailyRunner is:
 
@@ -318,7 +318,7 @@ At the end of the payment cycle, the user can view the total amount earned and u
 
 ---
 
-## 🔐 Data Storage
+##  Data Storage
 
 DailyRunner mainly uses **local storage** to keep user information.
 
@@ -332,24 +332,24 @@ This provides several advantages:
 
 ---
 
-## 🔮 Future Enhancements
+##  Future Enhancements
 
 The following features could be added in future versions:
 
-* ☁️ Cloud synchronization
-* 📱 Multi-device data synchronization
-* 🧾 Receipt photo attachments
-* 🔔 Weekly payment reminders and notifications
-* 📊 Trip and earnings analytics
-* 📈 Weekly and monthly earnings charts
-* 📤 Improved export options for accounting software
-* 🌙 Enhanced dark mode
-* 🚗 Support for multiple vehicles
-* 🔐 User authentication and secure cloud backup
+*  Cloud synchronization
+*  Multi-device data synchronization
+*  Receipt photo attachments
+*  Weekly payment reminders and notifications
+*  Trip and earnings analytics
+*  Weekly and monthly earnings charts
+*  Improved export options for accounting software
+*  Enhanced dark mode
+*  Support for multiple vehicles
+*  User authentication and secure cloud backup
 
 ---
 
-## 🎓 Academic Purpose
+##  Academic Purpose
 
 DailyRunner was developed as an **undergraduate software project** to apply software development concepts in a practical real-world scenario.
 
@@ -371,7 +371,7 @@ The project also provides an example of how a simple software solution can be us
 
 ---
 
-## 👩‍💻 Project
+##  Project
 
 **Project Name:** DailyRunner
 **Project Type:** Android Application
