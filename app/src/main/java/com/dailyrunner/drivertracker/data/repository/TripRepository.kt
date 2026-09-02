@@ -32,11 +32,19 @@ class TripRepository(
 ) {
 
     val ratePerKmFlow: Flow<Double> = userPreferencesRepository.ratePerKm
+    val driverNameFlow: Flow<String> = userPreferencesRepository.driverName
+    val vehicleNumberFlow: Flow<String> = userPreferencesRepository.vehicleNumber
+    val phoneNumberFlow: Flow<String> = userPreferencesRepository.phoneNumber
+    val employeeTypeFlow: Flow<String> = userPreferencesRepository.employeeType
 
     fun getRatePerKm(): Double = userPreferencesRepository.getRatePerKmSync()
 
     fun setRatePerKm(rate: Double) {
         userPreferencesRepository.setRatePerKm(rate)
+    }
+
+    fun updateDriverProfile(name: String, vehicle: String, phone: String, empType: String) {
+        userPreferencesRepository.updateDriverProfile(name, vehicle, phone, empType)
     }
 
     fun getTripForDate(date: String): Flow<DailyTrip?> {
