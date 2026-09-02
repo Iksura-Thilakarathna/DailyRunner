@@ -27,6 +27,8 @@ data class DashboardUiState(
     val selectedDateIso: String = PayPeriodUtils.getTodayIso(),
     val currentPayPeriod: PayPeriod = PayPeriodUtils.getCurrentPayPeriod(),
     val ratePerKm: Double = 104.0,
+    val driverName: String = "Kamal Perera",
+    val vehicleNumber: String = "WP ABC-1234",
     val startKmText: String = "",
     val endKmText: String = "",
     val destinationsText: String = "",
@@ -55,6 +57,16 @@ class DashboardViewModel(
             repository.ratePerKmFlow.collectLatest { rate ->
                 _uiState.value = _uiState.value.copy(ratePerKm = rate)
                 recalculateLiveValues()
+            }
+        }
+        viewModelScope.launch {
+            repository.driverNameFlow.collectLatest { name ->
+                _uiState.value = _uiState.value.copy(driverName = name)
+            }
+        }
+        viewModelScope.launch {
+            repository.vehicleNumberFlow.collectLatest { vehicle ->
+                _uiState.value = _uiState.value.copy(vehicleNumber = vehicle)
             }
         }
         observeRunningWeekTotals()

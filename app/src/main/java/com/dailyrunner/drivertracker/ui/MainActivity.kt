@@ -37,6 +37,9 @@ import com.dailyrunner.drivertracker.ui.screens.DashboardScreen
 import com.dailyrunner.drivertracker.ui.screens.HistoryScreen
 import com.dailyrunner.drivertracker.ui.screens.SettingsScreen
 import com.dailyrunner.drivertracker.ui.screens.WeeklyChequesScreen
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Receipt
 import com.dailyrunner.drivertracker.ui.theme.DailyRunnerTheme
 import com.dailyrunner.drivertracker.ui.viewmodel.DashboardViewModel
 import com.dailyrunner.drivertracker.ui.viewmodel.HistoryViewModel
@@ -44,9 +47,9 @@ import com.dailyrunner.drivertracker.ui.viewmodel.SettingsViewModel
 import com.dailyrunner.drivertracker.ui.viewmodel.WeeklyChequesViewModel
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    object Dashboard : Screen("dashboard", "Dashboard", Icons.Default.DirectionsCar)
-    object Cheques : Screen("cheques", "Cheques", Icons.AutoMirrored.Filled.ReceiptLong)
-    object History : Screen("history", "History", Icons.Default.History)
+    object Dashboard : Screen("dashboard", "Home", Icons.Default.Home)
+    object Cheques : Screen("cheques", "Payments", Icons.Default.AttachMoney)
+    object History : Screen("history", "History", Icons.Default.Receipt)
     object Settings : Screen("settings", "Settings", Icons.Default.Settings)
 }
 
