@@ -15,9 +15,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.dailyrunner.drivertracker.ui.theme.DarkCardBg
+import com.dailyrunner.drivertracker.ui.theme.PurplePrimary
+import com.dailyrunner.drivertracker.ui.theme.TextPrimary
+import com.dailyrunner.drivertracker.ui.theme.TextSecondary
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Backup
@@ -113,34 +128,92 @@ fun SettingsScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Top Header
+        // Top Header matching Mockup Screen 4
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    Text(
-                        text = "Settings & Backup",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Base Rate & Offline File Operations",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+            Text(
+                text = "Settings",
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary
+            )
+
+            // Right Profile Circle Icon
+            Surface(
+                shape = androidx.compose.foundation.shape.CircleShape,
+                color = DarkCardBg,
+                modifier = Modifier
+                    .size(48.dp)
+                    .clickable { viewModel.openEditProfileDialog() }
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Profile",
+                        tint = PurplePrimary,
+                        modifier = Modifier.size(26.dp)
                     )
                 }
             }
         }
+
+        // Driver Profile Card (Mockup Card 1)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = DarkCardBg)
+        ) {
+            Column(modifier = Modifier.padding(18.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Driver Profile",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = TextPrimary
+                    )
+                    IconButton(onClick = { viewModel.openEditProfileDialog() }) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit Profile",
+                            tint = TextSecondary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(text = "Driver Name : ${uiState.driverName}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = "Vehicle Number : ${uiState.vehicleNumber}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = "Phone Number : ${uiState.phoneNumber}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = "Employee Type : ${uiState.employeeType}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+            }
+        }
+
+        // Menu Item Card: Vehicle
+        SettingsMenuItemCard(title = "Vehicle") {}
+
+        // Menu Item Card: Earnings Rate
+        SettingsMenuItemCard(title = "Earnings Rate") {}
+
+        // Menu Item Card: Appearance
+        SettingsMenuItemCard(title = "Appearance") {}
+
+        // Menu Item Card: Data Backup
+        SettingsMenuItemCard(title = "Data Backup") { exportJsonLauncher.launch("daily_runner_backup.json") }
+
+        // Menu Item Card: About
+        SettingsMenuItemCard(title = "About") {}
 
         // Lifetime Statistics Card
         Card(
@@ -387,5 +460,110 @@ fun SettingsScreen(
                 )
             }
         }
+
+        if (uiState.showEditProfileDialog) {
+            EditDriverProfileDialog(
+                currentName = uiState.driverName,
+                currentVehicle = uiState.vehicleNumber,
+                currentPhone = uiState.phoneNumber,
+                currentEmpType = uiState.employeeType,
+                onDismiss = { viewModel.closeEditProfileDialog() },
+                onSave = { name, vehicle, phone, empType ->
+                    viewModel.saveDriverProfile(name, vehicle, phone, empType)
+                }
+            )
+        }
     }
+}
+
+@Composable
+fun SettingsMenuItemCard(
+    title: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkCardBg)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 18.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimary
+            )
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = TextSecondary
+            )
+        }
+    }
+}
+
+@Composable
+fun EditDriverProfileDialog(
+    currentName: String,
+    currentVehicle: String,
+    currentPhone: String,
+    currentEmpType: String,
+    onDismiss: () -> Unit,
+    onSave: (String, String, String, String) -> Unit
+) {
+    var name by remember { mutableStateOf(currentName) }
+    var vehicle by remember { mutableStateOf(currentVehicle) }
+    var phone by remember { mutableStateOf(currentPhone) }
+    var empType by remember { mutableStateOf(currentEmpType) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Driver Profile", fontWeight = FontWeight.Bold) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Driver Name") },
+                    singleLine = true
+                )
+                OutlinedTextField(
+                    value = vehicle,
+                    onValueChange = { vehicle = it },
+                    label = { Text("Vehicle Number") },
+                    singleLine = true
+                )
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = { phone = it },
+                    label = { Text("Phone Number") },
+                    singleLine = true
+                )
+                OutlinedTextField(
+                    value = empType,
+                    onValueChange = { empType = it },
+                    label = { Text("Employee Type") },
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = { onSave(name, vehicle, phone, empType) }) {
+                Text("Save Profile")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }

@@ -18,6 +18,11 @@ import java.io.OutputStream
 data class SettingsUiState(
     val ratePerKmText: String = "104.0",
     val currentRatePerKm: Double = 104.0,
+    val driverName: String = "Kamal Perera",
+    val vehicleNumber: String = "WP ABC-1234",
+    val phoneNumber: String = "077 1234567",
+    val employeeType: String = "Distributor",
+    val showEditProfileDialog: Boolean = false,
     val totalLifetimeKm: Double = 0.0,
     val totalLifetimeEarnings: Double = 0.0,
     val totalDaysWorked: Int = 0,
@@ -45,6 +50,26 @@ class SettingsViewModel(
             }
         }
         viewModelScope.launch {
+            repository.driverNameFlow.collectLatest { name ->
+                _uiState.value = _uiState.value.copy(driverName = name)
+            }
+        }
+        viewModelScope.launch {
+            repository.vehicleNumberFlow.collectLatest { vehicle ->
+                _uiState.value = _uiState.value.copy(vehicleNumber = vehicle)
+            }
+        }
+        viewModelScope.launch {
+            repository.phoneNumberFlow.collectLatest { phone ->
+                _uiState.value = _uiState.value.copy(phoneNumber = phone)
+            }
+        }
+        viewModelScope.launch {
+            repository.employeeTypeFlow.collectLatest { empType ->
+                _uiState.value = _uiState.value.copy(employeeType = empType)
+            }
+        }
+        viewModelScope.launch {
             repository.getAllTrips().collectLatest { trips ->
                 val sumKm = trips.sumOf { it.totalKm }
                 val sumEarnings = trips.sumOf { it.totalEarnings }
@@ -56,6 +81,20 @@ class SettingsViewModel(
                 )
             }
         }
+    }
+
+    fun openEditProfileDialog() {
+        _uiState.value = _uiState.value.copy(showEditProfileDialog = true)
+    }
+
+    fun closeEditProfileDialog() {
+        _uiState.value = _uiState.value.copy(showEditProfileDialog = false)
+    }
+
+    fun saveDriverProfile(name: String, vehicle: String, phone: String, empType: String) {
+        repository.updateDriverProfile(name, vehicle, phone, empType)
+        _uiState.value = _uiState.value.copy(showEditProfileDialog = false)
+        viewModelScope.launch { _messageEvent.emit("Driver Profile updated successfully") }
     }
 
     fun onRateTextChanged(input: String) {
