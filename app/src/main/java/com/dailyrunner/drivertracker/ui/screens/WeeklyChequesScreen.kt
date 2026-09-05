@@ -34,6 +34,9 @@ import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.AlertDialog
+import com.dailyrunner.drivertracker.ui.theme.DarkCardBg
+import com.dailyrunner.drivertracker.ui.theme.PurplePrimary
+import com.dailyrunner.drivertracker.ui.theme.TextPrimary
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -135,43 +138,22 @@ fun WeeklyChequesScreen(
             .padding(16.dp)
     ) {
         // Top Header
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    Text(
-                        text = "Weekly Cheques",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Friday – Thursday Pay Cycles",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
+        Text(
+            text = "Payments & Cheques",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            color = TextPrimary
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Filter Tabs [ All ] | [ Unpaid Cheques ] | [ Paid ]
+        // Filter Tabs [ All ] | [ Unpaid ] | [ Paid ]
         PrimaryTabRow(
             selectedTabIndex = uiState.selectedFilter.ordinal,
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp)),
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = DarkCardBg
         ) {
             Tab(
                 selected = uiState.selectedFilter == ChequeFilter.ALL,
@@ -192,6 +174,15 @@ fun WeeklyChequesScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        Text(
+            text = "Calculated Earnings (Fri–Thu)",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = TextPrimary
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         if (uiState.cheques.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -199,17 +190,21 @@ fun WeeklyChequesScreen(
                     .weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Icon(
-                        imageVector = Icons.Default.DateRange,
+                        imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
                         contentDescription = null,
                         modifier = Modifier.size(64.dp),
-                        tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "No Cheques Found",
+                        text = "No Cheques Logged Yet",
                         style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
@@ -244,11 +239,33 @@ fun WeeklyChequesScreen(
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             val text = viewModel.buildShareSummaryText(cheque)
                             clipboardManager.setText(AnnotatedString(text))
-                            // Note: Snackbar notification for copy
                         }
                     )
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // + Add Payments Button
+        Button(
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PurplePrimary,
+                contentColor = Color.White
+            )
+        ) {
+            Text(
+                text = "+ Add Payments",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -266,9 +283,9 @@ fun WeeklyChequeCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = DarkCardBg
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)

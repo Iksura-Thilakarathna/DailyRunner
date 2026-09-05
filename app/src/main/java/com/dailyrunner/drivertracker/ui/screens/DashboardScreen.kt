@@ -87,6 +87,18 @@ import com.dailyrunner.drivertracker.util.PayPeriodUtils
 import kotlinx.coroutines.flow.collectLatest
 import java.util.Locale
 
+import androidx.compose.material.icons.filled.DirectionsRun
+import androidx.compose.ui.graphics.Brush
+import com.dailyrunner.drivertracker.ui.theme.DarkCardBg
+import com.dailyrunner.drivertracker.ui.theme.DarkInputBg
+import com.dailyrunner.drivertracker.ui.theme.OutlineBorder
+import com.dailyrunner.drivertracker.ui.theme.PurpleGradientEnd
+import com.dailyrunner.drivertracker.ui.theme.PurpleGradientStart
+import com.dailyrunner.drivertracker.ui.theme.PurplePrimary
+import com.dailyrunner.drivertracker.ui.theme.TextMuted
+import com.dailyrunner.drivertracker.ui.theme.TextPrimary
+import com.dailyrunner.drivertracker.ui.theme.TextSecondary
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun DashboardScreen(
@@ -112,8 +124,13 @@ fun DashboardScreen(
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        // Top Banner Card: Pay Period Range & Running Earnings
-        PayPeriodHeaderCard(uiState = uiState)
+        // Mockup Header: Driver Name, Vehicle Number, Daily Runner badge
+        TopDriverHeader(uiState = uiState)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Purple Gradient Card: Earnings Summary This Week
+        EarningsSummaryCard(uiState = uiState)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -432,7 +449,7 @@ fun DashboardScreen(
                     }
                 }
 
-                // Big Driver Save Action Button (56dp minimum height)
+                // Big Driver Save Action Button (56dp height)
                 Button(
                     onClick = {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -441,30 +458,26 @@ fun DashboardScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(18.dp),
+                        .height(54.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (uiState.isNoWork) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                        containerColor = if (uiState.isNoWork) MaterialTheme.colorScheme.error else PurplePrimary,
+                        contentColor = Color.White
                     ),
                     enabled = !uiState.isSaving
                 ) {
                     if (uiState.isSaving) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = Color.White,
                             strokeWidth = 2.dp
                         )
                     } else {
-                        Icon(
-                            imageVector = if (uiState.isNoWork) Icons.Default.Block else Icons.Default.Save,
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = when {
                                 uiState.isNoWork -> "Save Off Day"
-                                uiState.existingTrip != null -> "Update Trip Entry"
-                                else -> "Save Trip Entry"
+                                uiState.existingTrip != null -> "Save Trip"
+                                else -> "Save Trip"
                             },
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
@@ -477,109 +490,131 @@ fun DashboardScreen(
 }
 
 @Composable
-fun PayPeriodHeaderCard(uiState: DashboardUiState) {
-    Card(
+fun TopDriverHeader(uiState: DashboardUiState) {
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
+        Column {
+            Text(
+                text = "Good Morning, ${uiState.driverName.split(" ").firstOrNull() ?: "Kamal"} !",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary
+            )
+            Text(
+                text = uiState.vehicleNumber,
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextSecondary
+            )
+        }
+
+        // Daily Runner Badge
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clip(CircleShape)
+                .background(Color(0xFF262035))
+                .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
+            Icon(
+                imageVector = Icons.Default.DirectionsRun,
+                contentDescription = null,
+                tint = Color(0xFFFBBF24),
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "Daily Runner",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary
+            )
+        }
+    }
+}
+
+@Composable
+fun EarningsSummaryCard(uiState: DashboardUiState) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        Color(0xFF6A26CD),
+                        Color(0xFF9E77ED)
+                    )
+                )
+            )
+            .padding(20.dp)
+    ) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column {
+                    Text(
+                        text = "Earnings Summary",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "This Week",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                }
+
+                Text(
+                    text = "Rs. ${String.format(Locale.ENGLISH, "%,.2f", uiState.runningWeekEarnings)}",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Event,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "ACTIVE PAY PERIOD (FRI - THU)",
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                    )
-                }
-
-                Surface(
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primary
-                ) {
-                    Text(
-                        text = "Rs. ${String.format(Locale.ENGLISH, "%.0f", uiState.ratePerKm)}/km",
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Text(
+                    text = "${String.format(Locale.ENGLISH, "%.1f", uiState.runningWeekKm)} KM - 5 Days Worked",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
+                Text(
+                    text = "Rate: Rs. ${String.format(Locale.ENGLISH, "%.0f", uiState.ratePerKm)}/Km",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
             }
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = uiState.currentPayPeriod.displayRange,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            HorizontalDivider(color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f))
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Running Earnings Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.Black.copy(alpha = 0.25f))
+                    .padding(vertical = 6.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Column {
-                    Text(
-                        text = "Running Earnings This Week",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                    )
-                    Text(
-                        text = "Rs. ${String.format(Locale.ENGLISH, "%,.2f", uiState.runningWeekEarnings)}",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                }
-
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Speed,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "${String.format(Locale.ENGLISH, "%.1f", uiState.runningWeekKm)} KM",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
-                }
+                Text(
+                    text = "Current calculation week (Fri–Thu)",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.White.copy(alpha = 0.85f)
+                )
             }
         }
     }
@@ -630,34 +665,34 @@ fun LiveCalculationPill(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.secondaryContainer
+        color = DarkInputBg
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = "Estimate Live :",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = TextSecondary
+            )
+
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.MonetizationOn,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Live Estimate:",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                    text = "Rs.${String.format(Locale.ENGLISH, "%,.2f", totalEarnings)}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = TextPrimary
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "${String.format(Locale.ENGLISH, "%.1f", distanceKm)} KM",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
                 )
             }
-
-            Text(
-                text = "[ ${String.format(Locale.ENGLISH, "%.1f", distanceKm)} km ] = Rs. ${String.format(Locale.ENGLISH, "%,.2f", totalEarnings)}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.ExtraBold,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
-            )
         }
     }
 }
