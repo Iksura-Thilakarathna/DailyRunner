@@ -25,6 +25,9 @@ class UserPreferencesRepository(context: Context) {
     private val _employeeType = MutableStateFlow(prefs.getString(KEY_EMPLOYEE_TYPE, "Distributor") ?: "Distributor")
     val employeeType: StateFlow<String> = _employeeType.asStateFlow()
 
+    private val _profileImageUri = MutableStateFlow(prefs.getString(KEY_PROFILE_IMAGE_URI, null))
+    val profileImageUri: StateFlow<String?> = _profileImageUri.asStateFlow()
+
     fun getRatePerKmSync(): Double {
         return prefs.getFloat(KEY_RATE_PER_KM, DEFAULT_RATE).toDouble()
     }
@@ -47,12 +50,18 @@ class UserPreferencesRepository(context: Context) {
         _employeeType.value = empType
     }
 
+    fun updateProfileImageUri(uriString: String?) {
+        prefs.edit().putString(KEY_PROFILE_IMAGE_URI, uriString).apply()
+        _profileImageUri.value = uriString
+    }
+
     companion object {
         private const val KEY_RATE_PER_KM = "rate_per_km"
         private const val KEY_DRIVER_NAME = "driver_name"
         private const val KEY_VEHICLE_NUMBER = "vehicle_number"
         private const val KEY_PHONE_NUMBER = "phone_number"
         private const val KEY_EMPLOYEE_TYPE = "employee_type"
+        private const val KEY_PROFILE_IMAGE_URI = "profile_image_uri"
         const val DEFAULT_RATE = 104.0f
     }
 }
