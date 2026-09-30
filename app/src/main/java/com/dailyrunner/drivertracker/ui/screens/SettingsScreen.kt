@@ -214,14 +214,6 @@ fun SettingsScreen(
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary
                     )
-                    IconButton(onClick = { viewModel.openEditProfileDialog() }) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Profile",
-                            tint = TextSecondary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -464,18 +456,6 @@ fun SettingsScreen(
 
 
 
-        if (uiState.showEditProfileDialog) {
-            EditDriverProfileDialog(
-                currentName = uiState.driverName,
-                currentVehicle = uiState.vehicleNumber,
-                currentPhone = uiState.phoneNumber,
-                currentEmpType = uiState.employeeType,
-                onDismiss = { viewModel.closeEditProfileDialog() },
-                onSave = { name, vehicle, phone, empType ->
-                    viewModel.saveDriverProfile(name, vehicle, phone, empType)
-                }
-            )
-        }
     }
 }
 
@@ -511,62 +491,4 @@ fun SettingsMenuItemCard(
             )
         }
     }
-}
-
-@Composable
-fun EditDriverProfileDialog(
-    currentName: String,
-    currentVehicle: String,
-    currentPhone: String,
-    currentEmpType: String,
-    onDismiss: () -> Unit,
-    onSave: (String, String, String, String) -> Unit
-) {
-    var name by remember { mutableStateOf(currentName) }
-    var vehicle by remember { mutableStateOf(currentVehicle) }
-    var phone by remember { mutableStateOf(currentPhone) }
-    var empType by remember { mutableStateOf(currentEmpType) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Edit Driver Profile", fontWeight = FontWeight.Bold) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Driver Name") },
-                    singleLine = true
-                )
-                OutlinedTextField(
-                    value = vehicle,
-                    onValueChange = { vehicle = it },
-                    label = { Text("Vehicle Number") },
-                    singleLine = true
-                )
-                OutlinedTextField(
-                    value = phone,
-                    onValueChange = { phone = it },
-                    label = { Text("Phone Number") },
-                    singleLine = true
-                )
-                OutlinedTextField(
-                    value = empType,
-                    onValueChange = { empType = it },
-                    label = { Text("Employee Type") },
-                    singleLine = true
-                )
-            }
-        },
-        confirmButton = {
-            Button(onClick = { onSave(name, vehicle, phone, empType) }) {
-                Text("Save Profile")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
 }
