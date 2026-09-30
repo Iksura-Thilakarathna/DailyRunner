@@ -369,14 +369,21 @@ The project demonstrates the use of:
 
 The project also provides an example of how a simple software solution can be used to improve a manual business process such as driver mileage and payment tracking.
 
+##  Developer Profile & Contribution Stats
+
+**Developer:** [Iksura Thilakarathna](https://github.com/Iksura-Thilakarathna)
+
+[![GitHub Streak](https://streak-stats.demolab.com?user=Iksura-Thilakarathna&theme=dark&background=121017&border=241F31&stroke=8B5CF6&ring=8B5CF6&fire=8B5CF6&currStreakNum=8B5CF6&sideNums=8B5CF6&currStreakLabel=8B5CF6&sideLabels=9E77ED&dates=9E77ED)](https://git.io/streak-stats)
+
 ---
 
-##  Project
+##  Project Summary
 
-**Project Name:** DailyRunner
-**Project Type:** Android Application
-**Platform:** Android
-**Language:** Kotlin
-**Database:** Room / SQLite
-**UI:** Jetpack Compose + Material 3
-**Architecture:** MVVM
+**Project Name:** DailyRunner  
+**Project Type:** Android Application  
+**Platform:** Android  
+**Language:** Kotlin  
+**Database:** Room / SQLite  
+**UI:** Jetpack Compose + Material 3  
+**Architecture:** Clean Architecture + MVVM  
+
