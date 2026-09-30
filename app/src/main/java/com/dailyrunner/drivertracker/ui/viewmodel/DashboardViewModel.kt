@@ -29,6 +29,7 @@ data class DashboardUiState(
     val ratePerKm: Double = 104.0,
     val driverName: String = "Kamal Perera",
     val vehicleNumber: String = "WP ABC-1234",
+    val profileImageUri: String? = null,
     val startKmText: String = "",
     val endKmText: String = "",
     val destinationsText: String = "",
@@ -67,6 +68,11 @@ class DashboardViewModel(
         viewModelScope.launch {
             repository.vehicleNumberFlow.collectLatest { vehicle ->
                 _uiState.value = _uiState.value.copy(vehicleNumber = vehicle)
+            }
+        }
+        viewModelScope.launch {
+            repository.profileImageUriFlow.collectLatest { uri ->
+                _uiState.value = _uiState.value.copy(profileImageUri = uri)
             }
         }
         observeRunningWeekTotals()

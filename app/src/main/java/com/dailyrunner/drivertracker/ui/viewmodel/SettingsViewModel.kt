@@ -22,6 +22,7 @@ data class SettingsUiState(
     val vehicleNumber: String = "WP ABC-1234",
     val phoneNumber: String = "077 1234567",
     val employeeType: String = "Distributor",
+    val profileImageUri: String? = null,
     val showEditProfileDialog: Boolean = false,
     val totalLifetimeKm: Double = 0.0,
     val totalLifetimeEarnings: Double = 0.0,
@@ -70,6 +71,11 @@ class SettingsViewModel(
             }
         }
         viewModelScope.launch {
+            repository.profileImageUriFlow.collectLatest { uri ->
+                _uiState.value = _uiState.value.copy(profileImageUri = uri)
+            }
+        }
+        viewModelScope.launch {
             repository.getAllTrips().collectLatest { trips ->
                 val sumKm = trips.sumOf { it.totalKm }
                 val sumEarnings = trips.sumOf { it.totalEarnings }
@@ -95,6 +101,11 @@ class SettingsViewModel(
         repository.updateDriverProfile(name, vehicle, phone, empType)
         _uiState.value = _uiState.value.copy(showEditProfileDialog = false)
         viewModelScope.launch { _messageEvent.emit("Driver Profile updated successfully") }
+    }
+
+    fun updateProfileImageUri(uriString: String?) {
+        repository.updateProfileImageUri(uriString)
+        viewModelScope.launch { _messageEvent.emit("Profile image updated") }
     }
 
     fun onRateTextChanged(input: String) {

@@ -14,6 +14,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -118,6 +123,15 @@ fun SettingsScreen(
         }
     }
 
+    // Profile Image Picker Launcher
+    val profileImagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.updateProfileImageUri(it.toString())
+        }
+    }
+
     val scrollState = rememberScrollState()
 
     Column(
@@ -141,21 +155,43 @@ fun SettingsScreen(
                 color = TextPrimary
             )
 
-            // Right Profile Circle Icon
+            // Right Profile Circle Icon (Tap to select profile image)
             Surface(
-                shape = androidx.compose.foundation.shape.CircleShape,
+                shape = CircleShape,
                 color = DarkCardBg,
                 modifier = Modifier
                     .size(48.dp)
-                    .clickable { viewModel.openEditProfileDialog() }
+                    .clickable { profileImagePickerLauncher.launch("image/*") }
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Profile",
-                        tint = PurplePrimary,
-                        modifier = Modifier.size(26.dp)
-                    )
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                    val bitmap = remember(uiState.profileImageUri) {
+                        if (!uiState.profileImageUri.isNullOrBlank()) {
+                            try {
+                                val uri = Uri.parse(uiState.profileImageUri)
+                                context.contentResolver.openInputStream(uri)?.use { stream ->
+                                    BitmapFactory.decodeStream(stream)?.asImageBitmap()
+                                }
+                            } catch (e: Exception) {
+                                null
+                            }
+                        } else null
+                    }
+
+                    if (bitmap != null) {
+                        Image(
+                            bitmap = bitmap,
+                            contentDescription = "Profile Picture",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile",
+                            tint = PurplePrimary,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
                 }
             }
         }
