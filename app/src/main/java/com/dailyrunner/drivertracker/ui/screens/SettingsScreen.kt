@@ -90,6 +90,14 @@ fun SettingsScreen(
         }
     }
 
+    if (uiState.showVehicleDialog) {
+        EditVehicleDialog(
+            currentVehicle = uiState.vehicleNumber,
+            onDismiss = { viewModel.closeVehicleDialog() },
+            onSave = { vehicle -> viewModel.saveVehicleNumber(vehicle) }
+        )
+    }
+
     // JSON Export File Picker
     val exportJsonLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
@@ -229,7 +237,11 @@ fun SettingsScreen(
         }
 
         // Menu Item Card: Vehicle
-        SettingsMenuItemCard(title = "Vehicle") {}
+        SettingsMenuItemCard(
+            title = "Vehicle",
+            subtitle = uiState.vehicleNumber,
+            onClick = { viewModel.openVehicleDialog() }
+        )
 
         // Menu Item Card: Earnings Rate
         SettingsMenuItemCard(title = "Earnings Rate") {}
@@ -462,6 +474,7 @@ fun SettingsScreen(
 @Composable
 fun SettingsMenuItemCard(
     title: String,
+    subtitle: String? = null,
     onClick: () -> Unit
 ) {
     Card(
@@ -478,12 +491,22 @@ fun SettingsMenuItemCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextPrimary
+                )
+                if (!subtitle.isNullOrBlank()) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
+            }
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null,
@@ -491,4 +514,66 @@ fun SettingsMenuItemCard(
             )
         }
     }
+}
+
+@Composable
+fun EditVehicleDialog(
+    currentVehicle: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
+    var vehicle by remember { mutableStateOf(currentVehicle) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Edit Vehicle Number",
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = "Enter your current vehicle registration number.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+                OutlinedTextField(
+                    value = vehicle,
+                    onValueChange = { vehicle = it },
+                    label = { Text("Vehicle Number") },
+                    placeholder = { Text("e.g. WP ABC-1234") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        focusedBorderColor = PurplePrimary,
+                        unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
+                        focusedLabelColor = PurplePrimary,
+                        unfocusedLabelColor = TextSecondary
+                    )
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSave(vehicle) },
+                colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text("Save", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel", color = TextSecondary)
+            }
+        },
+        containerColor = DarkCardBg,
+        shape = RoundedCornerShape(20.dp)
+    )
 }
