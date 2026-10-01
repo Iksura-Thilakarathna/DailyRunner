@@ -52,6 +52,10 @@ class TripRepository(
         userPreferencesRepository.updateProfileImageUri(uriString)
     }
 
+    fun updateVehicleNumber(vehicle: String) {
+        userPreferencesRepository.updateVehicleNumber(vehicle)
+    }
+
     fun getTripForDate(date: String): Flow<DailyTrip?> {
         return dailyTripDao.getTripForDate(date)
     }

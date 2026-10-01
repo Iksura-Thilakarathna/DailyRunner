@@ -24,6 +24,7 @@ data class SettingsUiState(
     val employeeType: String = "Distributor",
     val profileImageUri: String? = null,
     val showEditProfileDialog: Boolean = false,
+    val showVehicleDialog: Boolean = false,
     val totalLifetimeKm: Double = 0.0,
     val totalLifetimeEarnings: Double = 0.0,
     val totalDaysWorked: Int = 0,
@@ -95,6 +96,23 @@ class SettingsViewModel(
 
     fun closeEditProfileDialog() {
         _uiState.value = _uiState.value.copy(showEditProfileDialog = false)
+    }
+
+    fun openVehicleDialog() {
+        _uiState.value = _uiState.value.copy(showVehicleDialog = true)
+    }
+
+    fun closeVehicleDialog() {
+        _uiState.value = _uiState.value.copy(showVehicleDialog = false)
+    }
+
+    fun saveVehicleNumber(vehicle: String) {
+        val trimmed = vehicle.trim()
+        if (trimmed.isNotBlank()) {
+            repository.updateVehicleNumber(trimmed)
+            _uiState.value = _uiState.value.copy(showVehicleDialog = false)
+            viewModelScope.launch { _messageEvent.emit("Vehicle number updated") }
+        }
     }
 
     fun saveDriverProfile(name: String, vehicle: String, phone: String, empType: String) {

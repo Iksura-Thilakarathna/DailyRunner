@@ -50,6 +50,11 @@ class UserPreferencesRepository(context: Context) {
         _employeeType.value = empType
     }
 
+    fun updateVehicleNumber(vehicle: String) {
+        prefs.edit().putString(KEY_VEHICLE_NUMBER, vehicle).apply()
+        _vehicleNumber.value = vehicle
+    }
+
     fun updateProfileImageUri(uriString: String?) {
         prefs.edit().putString(KEY_PROFILE_IMAGE_URI, uriString).apply()
         _profileImageUri.value = uriString
