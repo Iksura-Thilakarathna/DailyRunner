@@ -369,11 +369,11 @@ The project demonstrates the use of:
 
 The project also provides an example of how a simple software solution can be used to improve a manual business process such as driver mileage and payment tracking.
 
-##  Developer Profile & Contribution Stats
+## 👨‍💻 Developer Profile & Contribution Stats
 
 **Developer:** [Iksura Thilakarathna](https://github.com/Iksura-Thilakarathna)
 
-[![GitHub Streak](https://streak-stats.demolab.com?user=Iksura-Thilakarathna&theme=dark&background=121017&border=241F31&stroke=8B5CF6&ring=8B5CF6&fire=8B5CF6&currStreakNum=8B5CF6&sideNums=8B5CF6&currStreakLabel=8B5CF6&sideLabels=9E77ED&dates=9E77ED)](https://git.io/streak-stats)
+[![GitHub Streak](https://streak-stats.demolab.com?user=Iksura-Thilakarathna&theme=dark&background=121017&border=241F31&stroke=8B5CF6&ring=8B5CF6&fire=8B5CF6&currStreakNum=8B5CF6&sideNums=8B5CF6&currStreakLabel=8B5CF6&sideLabels=9E77ED&dates=9E77ED&date_format=j%20M%5B%2C%20Y%5D)](https://git.io/streak-stats)
 
 ---
 
