@@ -350,25 +350,18 @@ The following features could be added in future versions:
 
 ---
 
-##  Academic Purpose
+## 💡 Project Purpose & Motivation
 
-DailyRunner was developed as an **undergraduate software project** to apply software development concepts in a practical real-world scenario.
+DailyRunner was independently designed and developed to solve real-world daily challenges faced by delivery and contract drivers. Built from the ground up as a standalone, practical digital tracker, it replaces manual paper logbooks with an intuitive, offline-first mobile app.
 
-The project demonstrates the use of:
+Key capabilities demonstrated in the software:
 
-* Android application development
-* Kotlin programming
-* Jetpack Compose
-* MVVM architecture
-* Local database management
-* CRUD operations
-* Data validation
-* State management
-* Kotlin Coroutines and Flow
-* Backup and restore functionality
-* Software design and development practices
-
-The project also provides an example of how a simple software solution can be used to improve a manual business process such as driver mileage and payment tracking.
+* Modern Android application architecture (MVVM + Clean Architecture)
+* 100% Jetpack Compose UI with Material 3 design
+* Offline-first local database management with Room & SQLite
+* Automated Friday–Thursday pay cycle and earnings calculations
+* Robust Scoped Storage (SAF) local JSON backup & CSV export
+* Reactive state management using Kotlin Coroutines and Flow
 
 ## 👨‍💻 Developer Profile & Contribution Stats
 
