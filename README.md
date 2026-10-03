@@ -146,10 +146,11 @@ All data is stored locally on the user's device, so the application can work wit
 
 ### Android Compatibility
 
-* **Minimum SDK:** Android 8.0 (API 26)
+* **Minimum SDK:** Android 10.0 (API 29)
 * **Compile SDK:** Android 14 (API 34)
 * **Target SDK:** Android 14 (API 34)
 * **Java:** JVM 17
+* **Android 10+ Features:** Full Scoped Storage (SAF), Edge-to-Edge Gesture Navigation, Write-Ahead Logging (WAL)
 
 ---
 
