@@ -363,15 +363,9 @@ Key capabilities demonstrated in the software:
 * Robust Scoped Storage (SAF) local JSON backup & CSV export
 * Reactive state management using Kotlin Coroutines and Flow
 
-## 👨‍💻 Developer Profile & Contribution Stats
-
-**Developer:** [Iksura Thilakarathna](https://github.com/Iksura-Thilakarathna)
-
-[![GitHub Streak](https://streak-stats.demolab.com?user=Iksura-Thilakarathna&theme=dark&background=121017&border=241F31&stroke=8B5CF6&ring=8B5CF6&fire=8B5CF6&currStreakNum=8B5CF6&sideNums=8B5CF6&currStreakLabel=8B5CF6&sideLabels=9E77ED&dates=9E77ED&date_format=j%20M%5B%2C%20Y%5D)](https://git.io/streak-stats)
-
 ---
 
-##  Project Summary
+## 📋 Project Summary
 
 **Project Name:** DailyRunner  
 **Project Type:** Android Application  
