@@ -16,6 +16,7 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        resourceConfigurations += listOf("en")
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -54,7 +55,13 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += listOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "/META-INF/*.version",
+                "/META-INF/DEPENDENCIES",
+                "/META-INF/INDEX.LIST",
+                "DebugProbesKt.bin"
+            )
         }
     }
 }
