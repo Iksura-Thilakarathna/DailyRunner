@@ -98,6 +98,105 @@ fun SettingsScreen(
         )
     }
 
+    if (uiState.showEditProfileDialog) {
+        EditProfileDialog(
+            currentName = uiState.driverName,
+            currentVehicle = uiState.vehicleNumber,
+            currentPhone = uiState.phoneNumber,
+            currentEmpType = uiState.employeeType,
+            onDismiss = { viewModel.closeEditProfileDialog() },
+            onSave = { name, vehicle, phone, empType ->
+                viewModel.saveDriverProfile(name, vehicle, phone, empType)
+            }
+        )
+    }
+
+    var showAppearanceDialog by remember { mutableStateOf(false) }
+    var showAboutDialog by remember { mutableStateOf(false) }
+
+    if (showAppearanceDialog) {
+        AlertDialog(
+            onDismissRequest = { showAppearanceDialog = false },
+            title = {
+                Text(
+                    text = "Display Appearance",
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "• Dark Theme Active",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = PurplePrimary
+                    )
+                    Text(
+                        text = "The dark theme is optimized for drivers: it significantly conserves battery life on OLED displays and minimizes eye strain during night delivery shifts while maintaining high-contrast visibility.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showAppearanceDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text("OK", fontWeight = FontWeight.Bold)
+                }
+            },
+            containerColor = DarkCardBg,
+            shape = RoundedCornerShape(20.dp)
+        )
+    }
+
+    if (showAboutDialog) {
+        AlertDialog(
+            onDismissRequest = { showAboutDialog = false },
+            title = {
+                Text(
+                    text = "About DailyRunner",
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Version 1.0.0",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = PurplePrimary
+                    )
+                    Text(
+                        text = "DailyRunner is a specialized driver mileage and weekly pay tracking tool built for delivery and contract drivers.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "• Standard Sri Lankan Friday–Thursday pay cycle\n• Local Room SQLite offline database with zero internet tracking\n• One-touch JSON and CSV data backups",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { showAboutDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text("Close", fontWeight = FontWeight.Bold)
+                }
+            },
+            containerColor = DarkCardBg,
+            shape = RoundedCornerShape(20.dp)
+        )
+    }
+
     // JSON Export File Picker
     val exportJsonLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
@@ -222,6 +321,17 @@ fun SettingsScreen(
                         fontWeight = FontWeight.Bold,
                         color = TextPrimary
                     )
+                    IconButton(
+                        onClick = { viewModel.openEditProfileDialog() },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit Profile",
+                            tint = PurplePrimary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -244,13 +354,21 @@ fun SettingsScreen(
         )
 
         // Menu Item Card: Appearance
-        SettingsMenuItemCard(title = "Appearance") {}
+        SettingsMenuItemCard(
+            title = "Appearance",
+            subtitle = "Dark Theme Active",
+            onClick = { showAppearanceDialog = true }
+        )
 
         // Menu Item Card: Data Backup
         SettingsMenuItemCard(title = "Data Backup") { exportJsonLauncher.launch("daily_runner_backup.json") }
 
         // Menu Item Card: About
-        SettingsMenuItemCard(title = "About") {}
+        SettingsMenuItemCard(
+            title = "About",
+            subtitle = "v1.0.0 • Offline Mileage & Pay Tracker",
+            onClick = { showAboutDialog = true }
+        )
 
         // Lifetime Statistics Card
         Card(
@@ -603,6 +721,116 @@ fun EditVehicleDialog(
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text("Save", fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel", color = TextSecondary)
+            }
+        },
+        containerColor = DarkCardBg,
+        shape = RoundedCornerShape(20.dp)
+    )
+}
+
+@Composable
+fun EditProfileDialog(
+    currentName: String,
+    currentVehicle: String,
+    currentPhone: String,
+    currentEmpType: String,
+    onDismiss: () -> Unit,
+    onSave: (String, String, String, String) -> Unit
+) {
+    var name by remember { mutableStateOf(currentName) }
+    var vehicle by remember { mutableStateOf(currentVehicle) }
+    var phone by remember { mutableStateOf(currentPhone) }
+    var empType by remember { mutableStateOf(currentEmpType) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Edit Driver Profile",
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Driver Name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        focusedBorderColor = PurplePrimary,
+                        unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
+                        focusedLabelColor = PurplePrimary,
+                        unfocusedLabelColor = TextSecondary
+                    )
+                )
+                OutlinedTextField(
+                    value = vehicle,
+                    onValueChange = { vehicle = it },
+                    label = { Text("Vehicle Number") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        focusedBorderColor = PurplePrimary,
+                        unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
+                        focusedLabelColor = PurplePrimary,
+                        unfocusedLabelColor = TextSecondary
+                    )
+                )
+                OutlinedTextField(
+                    value = phone,
+                    onValueChange = { phone = it },
+                    label = { Text("Phone Number") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        focusedBorderColor = PurplePrimary,
+                        unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
+                        focusedLabelColor = PurplePrimary,
+                        unfocusedLabelColor = TextSecondary
+                    )
+                )
+                OutlinedTextField(
+                    value = empType,
+                    onValueChange = { empType = it },
+                    label = { Text("Employee Type") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        focusedBorderColor = PurplePrimary,
+                        unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
+                        focusedLabelColor = PurplePrimary,
+                        unfocusedLabelColor = TextSecondary
+                    )
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSave(name, vehicle, phone, empType) },
+                colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text("Save Profile", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
