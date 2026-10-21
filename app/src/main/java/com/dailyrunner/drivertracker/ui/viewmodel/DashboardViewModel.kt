@@ -40,6 +40,7 @@ data class DashboardUiState(
     val validationError: String? = null,
     val runningWeekKm: Double = 0.0,
     val runningWeekEarnings: Double = 0.0,
+    val runningWeekDaysWorked: Int = 0,
     val isSaving: Boolean = false
 )
 
@@ -98,10 +99,12 @@ class DashboardViewModel(
                 }
                 val totalKm = weekTrips.sumOf { it.totalKm }
                 val totalEarnings = weekTrips.sumOf { it.totalEarnings }
+                val daysWorked = weekTrips.count { !it.isNoWork && it.totalKm > 0 }
 
                 _uiState.value = _uiState.value.copy(
                     runningWeekKm = totalKm,
-                    runningWeekEarnings = totalEarnings
+                    runningWeekEarnings = totalEarnings,
+                    runningWeekDaysWorked = daysWorked
                 )
             }
         }

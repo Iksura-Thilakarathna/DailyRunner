@@ -56,6 +56,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -85,15 +88,55 @@ import java.util.Locale
 @Composable
 fun WeeklyChequesScreen(
     viewModel: WeeklyChequesViewModel,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    onNavigateToDashboard: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    var showAddPaymentInfoDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.messageEvent.collectLatest { msg ->
             snackbarHostState.showSnackbar(msg)
         }
+    }
+
+    if (showAddPaymentInfoDialog) {
+        AlertDialog(
+            onDismissRequest = { showAddPaymentInfoDialog = false },
+            title = {
+                Text(
+                    text = "Weekly Payment Cycle",
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = "Weekly cheques are calculated automatically from your daily trip logs for every Friday–Thursday pay cycle.\n\nTo generate or update weekly payments, simply log or edit your daily trips.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showAddPaymentInfoDialog = false
+                        onNavigateToDashboard()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary)
+                ) {
+                    Text("Log Trip Now", fontWeight = FontWeight.Bold, color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAddPaymentInfoDialog = false }) {
+                    Text("Got It", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            },
+            containerColor = DarkCardBg,
+            shape = RoundedCornerShape(20.dp)
+        )
     }
 
     // Confirmation dialog for marking a cheque back to UNPAID
@@ -251,6 +294,7 @@ fun WeeklyChequesScreen(
         Button(
             onClick = {
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                showAddPaymentInfoDialog = true
             },
             modifier = Modifier
                 .fillMaxWidth()

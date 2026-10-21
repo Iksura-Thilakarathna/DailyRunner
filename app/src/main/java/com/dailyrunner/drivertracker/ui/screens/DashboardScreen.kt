@@ -1,5 +1,8 @@
 package com.dailyrunner.drivertracker.ui.screens
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -587,8 +590,10 @@ fun EarningsSummaryCard(uiState: DashboardUiState) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val daysWorked = uiState.runningWeekDaysWorked
+                val daysText = if (daysWorked == 1) "1 Day Worked" else "$daysWorked Days Worked"
                 Text(
-                    text = "${String.format(Locale.ENGLISH, "%.1f", uiState.runningWeekKm)} KM - 5 Days Worked",
+                    text = "${String.format(Locale.ENGLISH, "%.1f", uiState.runningWeekKm)} KM - $daysText",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.9f)
                 )
@@ -626,6 +631,8 @@ fun DaySwitcherTabs(
     selectedTab: DayTab,
     onTabSelected: (DayTab) -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
+
     PrimaryTabRow(
         selectedTabIndex = if (selectedTab == DayTab.TODAY) 0 else 1,
         modifier = Modifier
@@ -635,7 +642,12 @@ fun DaySwitcherTabs(
     ) {
         Tab(
             selected = selectedTab == DayTab.TODAY,
-            onClick = { onTabSelected(DayTab.TODAY) },
+            onClick = {
+                if (selectedTab != DayTab.TODAY) {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    onTabSelected(DayTab.TODAY)
+                }
+            },
             text = {
                 Text(
                     text = "Today (${PayPeriodUtils.formatShortDate(PayPeriodUtils.getTodayIso())})",
@@ -645,7 +657,12 @@ fun DaySwitcherTabs(
         )
         Tab(
             selected = selectedTab == DayTab.YESTERDAY,
-            onClick = { onTabSelected(DayTab.YESTERDAY) },
+            onClick = {
+                if (selectedTab != DayTab.YESTERDAY) {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    onTabSelected(DayTab.YESTERDAY)
+                }
+            },
             text = {
                 Text(
                     text = "Yesterday (${PayPeriodUtils.formatShortDate(PayPeriodUtils.getYesterdayIso())})",
@@ -680,18 +697,34 @@ fun LiveCalculationPill(
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Rs.${String.format(Locale.ENGLISH, "%,.2f", totalEarnings)}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = TextPrimary
-                )
+                AnimatedContent(
+                    targetState = totalEarnings,
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(150)) togetherWith fadeOut(animationSpec = tween(150))
+                    },
+                    label = "liveEarningsAnim"
+                ) { earnings ->
+                    Text(
+                        text = "Rs.${String.format(Locale.ENGLISH, "%,.2f", earnings)}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = TextPrimary
+                    )
+                }
                 Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "${String.format(Locale.ENGLISH, "%.1f", distanceKm)} KM",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary
-                )
+                AnimatedContent(
+                    targetState = distanceKm,
+                    transitionSpec = {
+                        fadeIn(animationSpec = tween(150)) togetherWith fadeOut(animationSpec = tween(150))
+                    },
+                    label = "liveDistanceAnim"
+                ) { km ->
+                    Text(
+                        text = "${String.format(Locale.ENGLISH, "%.1f", km)} KM",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
             }
         }
     }
