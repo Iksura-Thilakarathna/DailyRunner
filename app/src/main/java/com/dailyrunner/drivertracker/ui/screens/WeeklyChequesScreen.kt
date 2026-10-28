@@ -184,7 +184,7 @@ fun WeeklyChequesScreen(
             text = "Payments & Cheques",
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
-            color = TextPrimary
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -195,7 +195,7 @@ fun WeeklyChequesScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp)),
-            containerColor = DarkCardBg
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ) {
             Tab(
                 selected = uiState.selectedFilter == ChequeFilter.ALL,
@@ -220,7 +220,7 @@ fun WeeklyChequesScreen(
             text = "Calculated Earnings (Fri–Thu)",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = TextPrimary
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -350,7 +350,7 @@ fun WeeklyChequeCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = DarkCardBg
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

@@ -348,7 +348,7 @@ fun HistoryTripCard(
             },
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
-            containerColor = DarkCardBg
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -365,7 +365,7 @@ fun HistoryTripCard(
                 // Left Date Badge Box
                 Surface(
                     shape = RoundedCornerShape(14.dp),
-                    color = DarkInputBg,
+                    color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier.size(54.dp)
                 ) {
                     Column(
@@ -377,13 +377,13 @@ fun HistoryTripCard(
                             text = dateParts.firstOrNull() ?: "",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.ExtraBold,
-                            color = TextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
                             text = dateParts.getOrNull(1) ?: "",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.SemiBold,
-                            color = TextSecondary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -398,13 +398,13 @@ fun HistoryTripCard(
                         text = distanceDisplay,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = if (trip.isNoWork) ErrorRed else TextPrimary
+                        color = if (trip.isNoWork) ErrorRed else MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = if (trip.destinations.isNotBlank()) trip.destinations else "Local Route",
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1
                     )
                 }
@@ -423,7 +423,7 @@ fun HistoryTripCard(
                     Icon(
                         imageVector = if (isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                         contentDescription = "Expand Details",
-                        tint = TextSecondary,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -440,7 +440,7 @@ fun HistoryTripCard(
                         .fillMaxWidth()
                         .padding(top = 12.dp)
                 ) {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
 
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -461,14 +461,14 @@ fun HistoryTripCard(
                                 Text(
                                     text = "Odometer:",
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = TextSecondary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             Text(
                                 text = "${trip.startKm} KM  →  ${trip.endKm} KM",
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = TextPrimary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
 
@@ -490,14 +490,14 @@ fun HistoryTripCard(
                                 Text(
                                     text = "Route:",
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = TextSecondary
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
                                 text = trip.destinations,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = TextPrimary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -512,13 +512,13 @@ fun HistoryTripCard(
                             Text(
                                 text = "Note:",
                                 style = MaterialTheme.typography.labelMedium,
-                                color = TextSecondary
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
                                 text = trip.notes,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = TextPrimary
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }

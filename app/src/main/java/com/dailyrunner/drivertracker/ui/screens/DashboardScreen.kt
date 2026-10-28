@@ -503,12 +503,12 @@ fun TopDriverHeader(uiState: DashboardUiState) {
                 text = "Good Morning, ${uiState.driverName.split(" ").firstOrNull() ?: "Kamal"} !",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = uiState.vehicleNumber,
                 style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
@@ -517,7 +517,7 @@ fun TopDriverHeader(uiState: DashboardUiState) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .clip(CircleShape)
-                .background(Color(0xFF262035))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             Icon(
@@ -531,7 +531,7 @@ fun TopDriverHeader(uiState: DashboardUiState) {
                 text = "Daily Runner",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -681,7 +681,7 @@ fun LiveCalculationPill(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = DarkInputBg
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
@@ -692,7 +692,7 @@ fun LiveCalculationPill(
                 text = "Estimate Live :",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -707,7 +707,7 @@ fun LiveCalculationPill(
                         text = "Rs.${String.format(Locale.ENGLISH, "%,.2f", earnings)}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.ExtraBold,
-                        color = TextPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
@@ -721,7 +721,7 @@ fun LiveCalculationPill(
                     Text(
                         text = "${String.format(Locale.ENGLISH, "%.1f", km)} KM",
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

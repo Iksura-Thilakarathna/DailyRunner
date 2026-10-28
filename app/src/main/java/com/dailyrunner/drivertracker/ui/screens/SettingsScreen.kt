@@ -150,7 +150,7 @@ fun SettingsScreen(
                     Text("OK", fontWeight = FontWeight.Bold)
                 }
             },
-            containerColor = DarkCardBg,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(20.dp)
         )
     }
@@ -162,7 +162,7 @@ fun SettingsScreen(
                 Text(
                     text = "About DailyRunner",
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             text = {
@@ -176,12 +176,12 @@ fun SettingsScreen(
                     Text(
                         text = "DailyRunner is a specialized driver mileage and weekly pay tracking tool built for delivery and contract drivers.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = TextPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "• Standard Sri Lankan Friday–Thursday pay cycle\n• Local Room SQLite offline database with zero internet tracking\n• One-touch JSON and CSV data backups",
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             },
@@ -194,7 +194,7 @@ fun SettingsScreen(
                     Text("Close", fontWeight = FontWeight.Bold)
                 }
             },
-            containerColor = DarkCardBg,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(20.dp)
         )
     }
@@ -260,13 +260,13 @@ fun SettingsScreen(
                 text = "Settings",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             // Right Profile Circle Icon (Tap to select profile image)
             Surface(
                 shape = CircleShape,
-                color = DarkCardBg,
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier
                     .size(48.dp)
                     .clickable { profileImagePickerLauncher.launch("image/*") }
@@ -306,7 +306,7 @@ fun SettingsScreen(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = DarkCardBg)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Row(
@@ -318,7 +318,7 @@ fun SettingsScreen(
                         text = "Driver Profile",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = TextPrimary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     IconButton(
                         onClick = { viewModel.openEditProfileDialog() },
@@ -335,13 +335,13 @@ fun SettingsScreen(
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Text(text = "Driver Name : ${uiState.driverName}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                Text(text = "Driver Name : ${uiState.driverName}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(text = "Vehicle Number : ${uiState.vehicleNumber}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                Text(text = "Vehicle Number : ${uiState.vehicleNumber}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(text = "Phone Number : ${uiState.phoneNumber}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                Text(text = "Phone Number : ${uiState.phoneNumber}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(text = "Employee Type : ${uiState.employeeType}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                Text(text = "Employee Type : ${uiState.employeeType}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
@@ -429,7 +429,7 @@ fun SettingsScreen(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = DarkCardBg)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
@@ -460,7 +460,7 @@ fun SettingsScreen(
                             text = "Base Pay Rate Modifier",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = TextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -478,7 +478,7 @@ fun SettingsScreen(
                         Text(
                             text = "Active Base Rate",
                             style = MaterialTheme.typography.bodySmall,
-                            color = TextSecondary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = "Rs. ${String.format(Locale.ENGLISH, "%.2f", uiState.currentRatePerKm)} / KM",
@@ -503,12 +503,12 @@ fun SettingsScreen(
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(14.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                             focusedBorderColor = PurplePrimary,
-                            unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                             focusedLabelColor = PurplePrimary,
-                            unfocusedLabelColor = TextSecondary
+                            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
 
@@ -636,7 +636,7 @@ fun SettingsMenuItemCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkCardBg)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Row(
             modifier = Modifier
@@ -650,21 +650,21 @@ fun SettingsMenuItemCard(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (!subtitle.isNullOrBlank()) {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = subtitle,
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
             Icon(
                 imageVector = Icons.Default.ChevronRight,
                 contentDescription = null,
-                tint = TextSecondary
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -724,10 +724,10 @@ fun EditVehicleDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = TextSecondary)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         },
-        containerColor = DarkCardBg,
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp)
     )
 }
@@ -752,7 +752,7 @@ fun EditProfileDialog(
             Text(
                 text = "Edit Driver Profile",
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
@@ -765,12 +765,12 @@ fun EditProfileDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                         focusedBorderColor = PurplePrimary,
-                        unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                         focusedLabelColor = PurplePrimary,
-                        unfocusedLabelColor = TextSecondary
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
                 OutlinedTextField(
@@ -781,12 +781,12 @@ fun EditProfileDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                         focusedBorderColor = PurplePrimary,
-                        unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                         focusedLabelColor = PurplePrimary,
-                        unfocusedLabelColor = TextSecondary
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
                 OutlinedTextField(
@@ -797,12 +797,12 @@ fun EditProfileDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                         focusedBorderColor = PurplePrimary,
-                        unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                         focusedLabelColor = PurplePrimary,
-                        unfocusedLabelColor = TextSecondary
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
                 OutlinedTextField(
@@ -813,12 +813,12 @@ fun EditProfileDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                         focusedBorderColor = PurplePrimary,
-                        unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                         focusedLabelColor = PurplePrimary,
-                        unfocusedLabelColor = TextSecondary
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
             }
@@ -834,10 +834,10 @@ fun EditProfileDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = TextSecondary)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         },
-        containerColor = DarkCardBg,
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(20.dp)
     )
 }
