@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.dailyrunner.drivertracker.data.repository.TripRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -76,7 +77,7 @@ class SettingsViewModel(
                 _uiState.value = _uiState.value.copy(profileImageUri = uri)
             }
         }
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             repository.getAllTrips().collectLatest { trips ->
                 val sumKm = trips.sumOf { it.totalKm }
                 val sumEarnings = trips.sumOf { it.totalEarnings }

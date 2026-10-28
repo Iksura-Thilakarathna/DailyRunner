@@ -7,6 +7,7 @@ import com.dailyrunner.drivertracker.data.model.DailyTrip
 import com.dailyrunner.drivertracker.data.repository.TripRepository
 import com.dailyrunner.drivertracker.util.PayPeriod
 import com.dailyrunner.drivertracker.util.PayPeriodUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -90,7 +91,7 @@ class DashboardViewModel(
     }
 
     private fun observeRunningWeekTotals() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             repository.getAllTrips().collectLatest { trips ->
                 val currentPeriod = PayPeriodUtils.getCurrentPayPeriod()
                 val weekTrips = trips.filter { t ->

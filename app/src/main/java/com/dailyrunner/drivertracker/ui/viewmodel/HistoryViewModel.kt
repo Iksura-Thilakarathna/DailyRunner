@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.dailyrunner.drivertracker.data.model.DailyTrip
 import com.dailyrunner.drivertracker.data.repository.TripRepository
 import com.dailyrunner.drivertracker.util.PayPeriodUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -50,32 +52,36 @@ class HistoryViewModel(
     private val _messageEvent = MutableSharedFlow<String>()
     val messageEvent: SharedFlow<String> = _messageEvent.asSharedFlow()
 
+    private var filterJob: Job? = null
+
     init {
         viewModelScope.launch {
             repository.getAllTrips().collectLatest { trips ->
-                _uiState.value = _uiState.value.copy(
-                    allTrips = trips,
-                    filteredTrips = filterTrips(trips, _uiState.value.searchQuery, _uiState.value.selectedMonthFilter)
-                )
+                _uiState.value = _uiState.value.copy(allTrips = trips)
+                applyFilter(trips, _uiState.value.searchQuery, _uiState.value.selectedMonthFilter)
             }
         }
     }
 
     fun onSearchQueryChanged(query: String) {
-        _uiState.value = _uiState.value.copy(
-            searchQuery = query,
-            filteredTrips = filterTrips(_uiState.value.allTrips, query, _uiState.value.selectedMonthFilter)
-        )
+        _uiState.value = _uiState.value.copy(searchQuery = query)
+        applyFilter(_uiState.value.allTrips, query, _uiState.value.selectedMonthFilter)
     }
 
     fun selectMonthFilter(filter: MonthFilter) {
-        _uiState.value = _uiState.value.copy(
-            selectedMonthFilter = filter,
-            filteredTrips = filterTrips(_uiState.value.allTrips, _uiState.value.searchQuery, filter)
-        )
+        _uiState.value = _uiState.value.copy(selectedMonthFilter = filter)
+        applyFilter(_uiState.value.allTrips, _uiState.value.searchQuery, filter)
     }
 
-    private fun filterTrips(trips: List<DailyTrip>, query: String, filter: MonthFilter): List<DailyTrip> {
+    private fun applyFilter(trips: List<DailyTrip>, query: String, filter: MonthFilter) {
+        filterJob?.cancel()
+        filterJob = viewModelScope.launch(Dispatchers.Default) {
+            val filtered = filterTripsInternal(trips, query, filter)
+            _uiState.value = _uiState.value.copy(filteredTrips = filtered)
+        }
+    }
+
+    private fun filterTripsInternal(trips: List<DailyTrip>, query: String, filter: MonthFilter): List<DailyTrip> {
         val today = java.time.LocalDate.now()
         val thisMonthPrefix = today.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM"))
         val lastMonthPrefix = today.minusMonths(1).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM"))
@@ -91,7 +97,7 @@ class HistoryViewModel(
         return dateFiltered.filter { trip ->
             trip.date.lowercase().contains(q) ||
             trip.destinations.lowercase().contains(q) ||
-            (trip.notes?.lowercase()?.contains(q) ?: false) ||
+            (trip.notes?.lowercase()?.contains(q) == true) ||
             PayPeriodUtils.formatDateForDisplay(trip.date).lowercase().contains(q)
         }
     }
