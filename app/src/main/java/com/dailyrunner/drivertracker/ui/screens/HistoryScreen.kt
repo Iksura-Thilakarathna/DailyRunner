@@ -303,10 +303,17 @@ fun HistoryScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(uiState.filteredTrips, key = { it.date }) { trip ->
+                items(
+                    items = uiState.filteredTrips,
+                    key = { it.date },
+                    contentType = { "trip_record" }
+                ) { trip ->
+                    val onDeleteCallback = remember(trip.date) {
+                        { viewModel.onRequestDelete(trip) }
+                    }
                     HistoryTripCard(
                         trip = trip,
-                        onDeleteClick = { viewModel.onRequestDelete(trip) }
+                        onDeleteClick = onDeleteCallback
                     )
                 }
             }
@@ -321,6 +328,17 @@ fun HistoryTripCard(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
+
+    // Memoize string formatting to eliminate GC churn during rapid LazyColumn scrolling on 2GB RAM
+    val dateParts = remember(trip.date) {
+        PayPeriodUtils.formatShortDate(trip.date).split(" ")
+    }
+    val distanceDisplay = remember(trip.totalKm, trip.isNoWork) {
+        if (trip.isNoWork) "OFF DAY" else "${String.format(Locale.ENGLISH, "%.0f", trip.totalKm)} KM"
+    }
+    val earningsDisplay = remember(trip.totalEarnings) {
+        String.format(Locale.ENGLISH, "%,.2f", trip.totalEarnings)
+    }
 
     Card(
         modifier = Modifier
@@ -356,7 +374,6 @@ fun HistoryTripCard(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        val dateParts = PayPeriodUtils.formatShortDate(trip.date).split(" ")
                         Text(
                             text = dateParts.firstOrNull() ?: "",
                             style = MaterialTheme.typography.titleMedium,
@@ -379,7 +396,7 @@ fun HistoryTripCard(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = if (trip.isNoWork) "OFF DAY" else "${String.format(Locale.ENGLISH, "%.0f", trip.totalKm)} KM",
+                        text = distanceDisplay,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = if (trip.isNoWork) ErrorRed else TextPrimary
@@ -398,7 +415,7 @@ fun HistoryTripCard(
                 // Right: Green Earnings & Expand icon
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = String.format(Locale.ENGLISH, "%,.2f", trip.totalEarnings),
+                        text = earningsDisplay,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.ExtraBold,
                         color = PaidGreen

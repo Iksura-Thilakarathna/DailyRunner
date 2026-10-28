@@ -262,13 +262,19 @@ fun WeeklyChequesScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(uiState.cheques, key = { it.weekId }) { cheque ->
-                    WeeklyChequeCard(
-                        summary = cheque,
-                        isExpanded = uiState.expandedWeekId == cheque.weekId,
-                        onToggleExpand = { viewModel.toggleCardExpansion(cheque.weekId) },
-                        onTogglePayment = { viewModel.onRequestPaymentToggle(cheque) },
-                        onShare = {
+                items(
+                    items = uiState.cheques,
+                    key = { it.weekId },
+                    contentType = { "cheque_summary" }
+                ) { cheque ->
+                    val onToggleExpand = remember(cheque.weekId) {
+                        { viewModel.toggleCardExpansion(cheque.weekId) }
+                    }
+                    val onTogglePayment = remember(cheque.weekId) {
+                        { viewModel.onRequestPaymentToggle(cheque) }
+                    }
+                    val onShare = remember(cheque) {
+                        {
                             val text = viewModel.buildShareSummaryText(cheque)
                             val sendIntent = Intent().apply {
                                 action = Intent.ACTION_SEND
@@ -277,12 +283,23 @@ fun WeeklyChequesScreen(
                             }
                             val shareIntent = Intent.createChooser(sendIntent, "Share Cheque Summary")
                             context.startActivity(shareIntent)
-                        },
-                        onCopy = {
+                        }
+                    }
+                    val onCopy = remember(cheque) {
+                        {
                             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                             val text = viewModel.buildShareSummaryText(cheque)
                             clipboardManager.setText(AnnotatedString(text))
                         }
+                    }
+
+                    WeeklyChequeCard(
+                        summary = cheque,
+                        isExpanded = uiState.expandedWeekId == cheque.weekId,
+                        onToggleExpand = onToggleExpand,
+                        onTogglePayment = onTogglePayment,
+                        onShare = onShare,
+                        onCopy = onCopy
                     )
                 }
             }
@@ -323,6 +340,13 @@ fun WeeklyChequeCard(
     onShare: () -> Unit,
     onCopy: () -> Unit
 ) {
+    val formattedAmount = remember(summary.totalChequeAmount) {
+        String.format(Locale.ENGLISH, "%,.2f", summary.totalChequeAmount)
+    }
+    val formattedDistance = remember(summary.totalDistanceKm) {
+        String.format(Locale.ENGLISH, "%.1f", summary.totalDistanceKm)
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -428,7 +452,7 @@ fun WeeklyChequeCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = "Rs. ${String.format(Locale.ENGLISH, "%,.2f", summary.totalChequeAmount)}",
+                        text = "Rs. $formattedAmount",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.ExtraBold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -450,7 +474,7 @@ fun WeeklyChequeCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${String.format(Locale.ENGLISH, "%.1f", summary.totalDistanceKm)} KM",
+                            text = "$formattedDistance KM",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
