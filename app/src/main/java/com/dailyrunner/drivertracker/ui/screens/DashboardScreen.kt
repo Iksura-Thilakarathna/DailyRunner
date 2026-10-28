@@ -123,7 +123,6 @@ fun DashboardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
@@ -345,10 +344,10 @@ fun DashboardScreen(
                         }
 
                         // Live Calculation Pill
-                        val startVal = uiState.startKmText.toDoubleOrNull() ?: 0.0
-                        val endVal = uiState.endKmText.toDoubleOrNull() ?: 0.0
-                        val liveKm = (endVal - startVal).coerceAtLeast(0.0)
-                        val liveEarnings = liveKm * uiState.ratePerKm
+                        val startVal = remember(uiState.startKmText) { uiState.startKmText.toDoubleOrNull() ?: 0.0 }
+                        val endVal = remember(uiState.endKmText) { uiState.endKmText.toDoubleOrNull() ?: 0.0 }
+                        val liveKm = remember(startVal, endVal) { (endVal - startVal).coerceAtLeast(0.0) }
+                        val liveEarnings = remember(liveKm, uiState.ratePerKm) { liveKm * uiState.ratePerKm }
 
                         LiveCalculationPill(
                             distanceKm = liveKm,
