@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import android.graphics.BitmapFactory
+import android.content.Context
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.asImageBitmap
@@ -275,9 +277,7 @@ fun SettingsScreen(
                         if (!uiState.profileImageUri.isNullOrBlank()) {
                             try {
                                 val uri = Uri.parse(uiState.profileImageUri)
-                                context.contentResolver.openInputStream(uri)?.use { stream ->
-                                    BitmapFactory.decodeStream(stream)?.asImageBitmap()
-                                }
+                                decodeSampledBitmapFromUri(context, uri, 160, 160)
                             } catch (e: Exception) {
                                 null
                             }
@@ -841,4 +841,46 @@ fun EditProfileDialog(
         containerColor = DarkCardBg,
         shape = RoundedCornerShape(20.dp)
     )
+}
+
+/**
+ * Memory-efficient bitmap decoder for low-RAM devices (<= 2GB RAM).
+ * Downsamples large camera images to target bounds and uses RGB_565 to prevent GC pauses.
+ */
+internal fun decodeSampledBitmapFromUri(
+    context: Context,
+    uri: Uri,
+    reqWidth: Int,
+    reqHeight: Int
+): ImageBitmap? {
+    return try {
+        val boundsOptions = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        context.contentResolver.openInputStream(uri)?.use { stream ->
+            BitmapFactory.decodeStream(stream, null, boundsOptions)
+        }
+
+        var inSampleSize = 1
+        val height = boundsOptions.outHeight
+        val width = boundsOptions.outWidth
+
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight = height / 2
+            val halfWidth = width / 2
+            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+
+        val decodeOptions = BitmapFactory.Options().apply {
+            this.inSampleSize = inSampleSize
+            inPreferredConfig = android.graphics.Bitmap.Config.RGB_565
+        }
+        context.contentResolver.openInputStream(uri)?.use { stream ->
+            BitmapFactory.decodeStream(stream, null, decodeOptions)?.asImageBitmap()
+        }
+    } catch (e: Exception) {
+        null
+    }
 }
