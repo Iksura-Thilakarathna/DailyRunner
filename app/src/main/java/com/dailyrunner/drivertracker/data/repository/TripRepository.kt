@@ -37,8 +37,13 @@ class TripRepository(
     val phoneNumberFlow: Flow<String> = userPreferencesRepository.phoneNumber
     val employeeTypeFlow: Flow<String> = userPreferencesRepository.employeeType
     val profileImageUriFlow: Flow<String?> = userPreferencesRepository.profileImageUri
+    val themeModeFlow: Flow<String> = userPreferencesRepository.themeMode
 
     fun getRatePerKm(): Double = userPreferencesRepository.getRatePerKmSync()
+
+    fun setThemeMode(mode: String) {
+        userPreferencesRepository.setThemeMode(mode)
+    }
 
     fun setRatePerKm(rate: Double) {
         userPreferencesRepository.setRatePerKm(rate)

@@ -28,6 +28,9 @@ class UserPreferencesRepository(context: Context) {
     private val _profileImageUri = MutableStateFlow(prefs.getString(KEY_PROFILE_IMAGE_URI, null))
     val profileImageUri: StateFlow<String?> = _profileImageUri.asStateFlow()
 
+    private val _themeMode = MutableStateFlow(prefs.getString(KEY_THEME_MODE, THEME_SYSTEM) ?: THEME_SYSTEM)
+    val themeMode: StateFlow<String> = _themeMode.asStateFlow()
+
     fun getRatePerKmSync(): Double {
         return prefs.getFloat(KEY_RATE_PER_KM, DEFAULT_RATE).toDouble()
     }
@@ -60,6 +63,11 @@ class UserPreferencesRepository(context: Context) {
         _profileImageUri.value = uriString
     }
 
+    fun setThemeMode(mode: String) {
+        prefs.edit().putString(KEY_THEME_MODE, mode).apply()
+        _themeMode.value = mode
+    }
+
     companion object {
         private const val KEY_RATE_PER_KM = "rate_per_km"
         private const val KEY_DRIVER_NAME = "driver_name"
@@ -67,6 +75,12 @@ class UserPreferencesRepository(context: Context) {
         private const val KEY_PHONE_NUMBER = "phone_number"
         private const val KEY_EMPLOYEE_TYPE = "employee_type"
         private const val KEY_PROFILE_IMAGE_URI = "profile_image_uri"
+        private const val KEY_THEME_MODE = "theme_mode"
+
+        const val THEME_SYSTEM = "SYSTEM"
+        const val THEME_LIGHT = "LIGHT"
+        const val THEME_DARK = "DARK"
+
         const val DEFAULT_RATE = 104.0f
     }
 }
