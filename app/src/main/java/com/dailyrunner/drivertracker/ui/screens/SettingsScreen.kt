@@ -36,11 +36,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.dailyrunner.drivertracker.ui.theme.DarkCardBg
 import com.dailyrunner.drivertracker.ui.theme.PurplePrimary
-import com.dailyrunner.drivertracker.ui.theme.TextPrimary
-import com.dailyrunner.drivertracker.ui.theme.TextSecondary
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrightnessAuto
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Download
@@ -113,47 +113,7 @@ fun SettingsScreen(
         )
     }
 
-    var showAppearanceDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
-
-    if (showAppearanceDialog) {
-        AlertDialog(
-            onDismissRequest = { showAppearanceDialog = false },
-            title = {
-                Text(
-                    text = "Display Appearance",
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary
-                )
-            },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "• Dark Theme Active",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = PurplePrimary
-                    )
-                    Text(
-                        text = "The dark theme is optimized for drivers: it significantly conserves battery life on OLED displays and minimizes eye strain during night delivery shifts while maintaining high-contrast visibility.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = { showAppearanceDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text("OK", fontWeight = FontWeight.Bold)
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(20.dp)
-        )
-    }
 
     if (showAboutDialog) {
         AlertDialog(
@@ -352,12 +312,108 @@ fun SettingsScreen(
             onClick = { viewModel.openVehicleDialog() }
         )
 
-        // Menu Item Card: Appearance
-        SettingsMenuItemCard(
-            title = "Appearance",
-            subtitle = "Dark Theme Active",
-            onClick = { showAppearanceDialog = true }
-        )
+        // Theme Selection Card with Switcher Buttons
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Theme & Appearance",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = when (uiState.themeMode) {
+                                "LIGHT" -> "Light Theme active"
+                                "DARK" -> "Dark Theme active"
+                                else -> "System Default (Auto)"
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    Surface(
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = when (uiState.themeMode) {
+                                    "LIGHT" -> Icons.Default.LightMode
+                                    "DARK" -> Icons.Default.DarkMode
+                                    else -> Icons.Default.BrightnessAuto
+                                },
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Switcher Button Row: [ System ] [ Light ] [ Dark ]
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val modes = listOf(
+                        Triple("SYSTEM", "System", Icons.Default.BrightnessAuto),
+                        Triple("LIGHT", "Light", Icons.Default.LightMode),
+                        Triple("DARK", "Dark", Icons.Default.DarkMode)
+                    )
+
+                    modes.forEach { (mode, label, icon) ->
+                        val isSelected = uiState.themeMode == mode
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(44.dp)
+                                .clickable { viewModel.setThemeMode(mode) },
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+                            border = androidx.compose.foundation.BorderStroke(
+                                width = if (isSelected) 1.5.dp else 1.dp,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = label,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // Menu Item Card: Data Backup
         SettingsMenuItemCard(title = "Data Backup") { exportJsonLauncher.launch("daily_runner_backup.json") }
@@ -684,7 +740,7 @@ fun EditVehicleDialog(
             Text(
                 text = "Edit Vehicle Number",
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
@@ -692,7 +748,7 @@ fun EditVehicleDialog(
                 Text(
                     text = "Enter your current vehicle registration number.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 OutlinedTextField(
                     value = vehicle,
@@ -703,12 +759,12 @@ fun EditVehicleDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
-                        focusedBorderColor = PurplePrimary,
-                        unfocusedBorderColor = TextSecondary.copy(alpha = 0.5f),
-                        focusedLabelColor = PurplePrimary,
-                        unfocusedLabelColor = TextSecondary
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
             }

@@ -8,12 +8,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ReceiptLong
-import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +25,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -41,9 +43,6 @@ import com.dailyrunner.drivertracker.ui.screens.DashboardScreen
 import com.dailyrunner.drivertracker.ui.screens.HistoryScreen
 import com.dailyrunner.drivertracker.ui.screens.SettingsScreen
 import com.dailyrunner.drivertracker.ui.screens.WeeklyChequesScreen
-import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Receipt
 import com.dailyrunner.drivertracker.ui.theme.DailyRunnerTheme
 import com.dailyrunner.drivertracker.ui.viewmodel.DashboardViewModel
 import com.dailyrunner.drivertracker.ui.viewmodel.HistoryViewModel
@@ -69,7 +68,34 @@ class MainActivity : ComponentActivity() {
         val repository = app.repository
 
         setContent {
-            DailyRunnerTheme {
+            val settingsViewModel: SettingsViewModel = viewModel(
+                factory = SettingsViewModel.Factory(repository)
+            )
+            val settingsUiState by settingsViewModel.uiState.collectAsState()
+
+            val isDark = when (settingsUiState.themeMode) {
+                "LIGHT" -> false
+                "DARK" -> true
+                else -> isSystemInDarkTheme()
+            }
+
+            DisposableEffect(isDark) {
+                enableEdgeToEdge(
+                    statusBarStyle = if (isDark) {
+                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+                    },
+                    navigationBarStyle = if (isDark) {
+                        SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
+                    }
+                )
+                onDispose {}
+            }
+
+            DailyRunnerTheme(themeMode = settingsUiState.themeMode) {
                 val navController = rememberNavController()
                 val snackbarHostState = remember { SnackbarHostState() }
 
@@ -81,9 +107,6 @@ class MainActivity : ComponentActivity() {
                 )
                 val historyViewModel: HistoryViewModel = viewModel(
                     factory = HistoryViewModel.Factory(repository)
-                )
-                val settingsViewModel: SettingsViewModel = viewModel(
-                    factory = SettingsViewModel.Factory(repository)
                 )
 
                 val items = listOf(

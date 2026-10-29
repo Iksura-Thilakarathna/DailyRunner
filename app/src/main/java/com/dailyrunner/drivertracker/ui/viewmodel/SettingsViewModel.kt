@@ -24,6 +24,7 @@ data class SettingsUiState(
     val phoneNumber: String = "077 1234567",
     val employeeType: String = "Distributor",
     val profileImageUri: String? = null,
+    val themeMode: String = "SYSTEM",
     val showEditProfileDialog: Boolean = false,
     val showVehicleDialog: Boolean = false,
     val totalLifetimeKm: Double = 0.0,
@@ -77,6 +78,11 @@ class SettingsViewModel(
                 _uiState.value = _uiState.value.copy(profileImageUri = uri)
             }
         }
+        viewModelScope.launch {
+            repository.themeModeFlow.collectLatest { mode ->
+                _uiState.value = _uiState.value.copy(themeMode = mode)
+            }
+        }
         viewModelScope.launch(Dispatchers.Default) {
             repository.getAllTrips().collectLatest { trips ->
                 val sumKm = trips.sumOf { it.totalKm }
@@ -89,6 +95,10 @@ class SettingsViewModel(
                 )
             }
         }
+    }
+
+    fun setThemeMode(mode: String) {
+        repository.setThemeMode(mode)
     }
 
     fun openEditProfileDialog() {
