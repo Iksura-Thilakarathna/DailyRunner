@@ -264,7 +264,9 @@ fun SettingsScreen(
 
         // Driver Profile Card (Mockup Card 1)
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { viewModel.openEditProfileDialog() },
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
@@ -304,6 +306,13 @@ fun SettingsScreen(
                 Text(text = "Employee Type : ${uiState.employeeType}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
+
+        // Menu Item Card: Vehicle Driver
+        SettingsMenuItemCard(
+            title = "Vehicle Driver",
+            subtitle = "${uiState.driverName} • ${uiState.vehicleNumber}",
+            onClick = { viewModel.openEditProfileDialog() }
+        )
 
         // Menu Item Card: Vehicle
         SettingsMenuItemCard(
@@ -806,17 +815,21 @@ fun EditProfileDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "Edit Driver Profile",
+                text = "Edit Vehicle Driver Details",
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Driver Name") },
+                    placeholder = { Text("e.g. Kamal Perera") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -833,6 +846,7 @@ fun EditProfileDialog(
                     value = vehicle,
                     onValueChange = { vehicle = it },
                     label = { Text("Vehicle Number") },
+                    placeholder = { Text("e.g. WP ABC-1234") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -849,6 +863,8 @@ fun EditProfileDialog(
                     value = phone,
                     onValueChange = { phone = it },
                     label = { Text("Phone Number") },
+                    placeholder = { Text("e.g. 077 1234567") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -865,6 +881,7 @@ fun EditProfileDialog(
                     value = empType,
                     onValueChange = { empType = it },
                     label = { Text("Employee Type") },
+                    placeholder = { Text("e.g. Distributor") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -881,11 +898,17 @@ fun EditProfileDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onSave(name, vehicle, phone, empType) },
+                onClick = {
+                    val finalName = name.trim().ifEmpty { currentName }
+                    val finalVehicle = vehicle.trim().ifEmpty { currentVehicle }
+                    val finalPhone = phone.trim().ifEmpty { currentPhone }
+                    val finalEmpType = empType.trim().ifEmpty { currentEmpType }
+                    onSave(finalName, finalVehicle, finalPhone, finalEmpType)
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text("Save Profile", fontWeight = FontWeight.Bold)
+                Text("Save Details", fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
