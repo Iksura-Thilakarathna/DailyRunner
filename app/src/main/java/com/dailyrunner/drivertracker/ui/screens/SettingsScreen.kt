@@ -41,6 +41,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Download
@@ -110,6 +111,19 @@ fun SettingsScreen(
             onSave = { name, vehicle, phone, empType ->
                 viewModel.saveDriverProfile(name, vehicle, phone, empType)
             }
+        )
+    }
+
+    if (uiState.showAppearanceDialog) {
+        AppearanceDialog(
+            currentTheme = uiState.themeMode,
+            currentFontSize = uiState.fontSize,
+            sampleDriver = uiState.driverName,
+            sampleVehicle = uiState.vehicleNumber,
+            sampleRate = uiState.currentRatePerKm,
+            onThemeChange = { viewModel.setThemeMode(it) },
+            onFontSizeChange = { viewModel.setFontSize(it) },
+            onDismiss = { viewModel.closeAppearanceDialog() }
         )
     }
 
@@ -321,108 +335,12 @@ fun SettingsScreen(
             onClick = { viewModel.openVehicleDialog() }
         )
 
-        // Theme Selection Card with Switcher Buttons
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-        ) {
-            Column(
-                modifier = Modifier.padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            text = "Theme & Appearance",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        Text(
-                            text = when (uiState.themeMode) {
-                                "LIGHT" -> "Light Theme active"
-                                "DARK" -> "Dark Theme active"
-                                else -> "System Default (Auto)"
-                            },
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                        modifier = Modifier.size(36.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = when (uiState.themeMode) {
-                                    "LIGHT" -> Icons.Default.LightMode
-                                    "DARK" -> Icons.Default.DarkMode
-                                    else -> Icons.Default.BrightnessAuto
-                                },
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-                }
-
-                // Switcher Button Row: [ System ] [ Light ] [ Dark ]
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val modes = listOf(
-                        Triple("SYSTEM", "System", Icons.Default.BrightnessAuto),
-                        Triple("LIGHT", "Light", Icons.Default.LightMode),
-                        Triple("DARK", "Dark", Icons.Default.DarkMode)
-                    )
-
-                    modes.forEach { (mode, label, icon) ->
-                        val isSelected = uiState.themeMode == mode
-                        Surface(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(44.dp)
-                                .clickable { viewModel.setThemeMode(mode) },
-                            shape = RoundedCornerShape(12.dp),
-                            color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
-                            border = androidx.compose.foundation.BorderStroke(
-                                width = if (isSelected) 1.5.dp else 1.dp,
-                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                            )
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = icon,
-                                    contentDescription = label,
-                                    modifier = Modifier.size(16.dp),
-                                    tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = label,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        // Menu Item Card: Appearance
+        SettingsMenuItemCard(
+            title = "Appearance",
+            subtitle = "${when (uiState.themeMode) { "LIGHT" -> "White Theme"; "DARK" -> "Dark Theme"; else -> "System Default" }} \u2022 ${when (uiState.fontSize) { "SMALL" -> "Small Text"; "LARGE" -> "Large Text"; else -> "Medium Text" }}",
+            onClick = { viewModel.openAppearanceDialog() }
+        )
 
         // Menu Item Card: Data Backup
         SettingsMenuItemCard(title = "Data Backup") { exportJsonLauncher.launch("daily_runner_backup.json") }
@@ -914,6 +832,203 @@ fun EditProfileDialog(
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(20.dp)
+    )
+}
+
+@Composable
+fun AppearanceDialog(
+    currentTheme: String,
+    currentFontSize: String,
+    sampleDriver: String,
+    sampleVehicle: String,
+    sampleRate: Double,
+    onThemeChange: (String) -> Unit,
+    onFontSizeChange: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Palette,
+                    contentDescription = null,
+                    tint = PurplePrimary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = "Appearance & Display",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Section 1: Theme Select Option (Dark and White)
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "THEME MODE (DARK & WHITE)",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = PurplePrimary
+                    )
+
+                    val themeOptions = listOf(
+                        Triple("LIGHT", "White", Icons.Default.LightMode),
+                        Triple("DARK", "Dark", Icons.Default.DarkMode),
+                        Triple("SYSTEM", "Auto", Icons.Default.BrightnessAuto)
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        themeOptions.forEach { (mode, label, icon) ->
+                            val isSelected = currentTheme == mode
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(48.dp)
+                                    .clickable { onThemeChange(mode) },
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                border = androidx.compose.foundation.BorderStroke(
+                                    width = if (isSelected) 2.dp else 1.dp,
+                                    color = if (isSelected) PurplePrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                )
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = label,
+                                        modifier = Modifier.size(16.dp),
+                                        tint = if (isSelected) PurplePrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Section 2: Font Size Option
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "FONT SIZE",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = PurplePrimary
+                    )
+
+                    val fontOptions = listOf(
+                        Triple("SMALL", "Small", "A-"),
+                        Triple("MEDIUM", "Medium", "A"),
+                        Triple("LARGE", "Large", "A+")
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        fontOptions.forEach { (sizeKey, label, symbol) ->
+                            val isSelected = currentFontSize == sizeKey
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(48.dp)
+                                    .clickable { onFontSizeChange(sizeKey) },
+                                shape = RoundedCornerShape(12.dp),
+                                color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                border = androidx.compose.foundation.BorderStroke(
+                                    width = if (isSelected) 2.dp else 1.dp,
+                                    color = if (isSelected) PurplePrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                )
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = symbol,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (isSelected) PurplePrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Live Preview Card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "LIVE PREVIEW",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = PurplePrimary
+                        )
+                        Text(
+                            text = "Daily Runner Pay Rate: Rs. ${String.format(Locale.ENGLISH, "%.1f", sampleRate)} / KM",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "Driver: $sampleDriver \u2022 Vehicle: $sampleVehicle",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text("Done", fontWeight = FontWeight.Bold)
             }
         },
         containerColor = MaterialTheme.colorScheme.surface,
