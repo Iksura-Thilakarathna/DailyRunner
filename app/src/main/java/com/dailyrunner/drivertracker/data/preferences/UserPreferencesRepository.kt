@@ -31,6 +31,9 @@ class UserPreferencesRepository(context: Context) {
     private val _themeMode = MutableStateFlow(prefs.getString(KEY_THEME_MODE, THEME_SYSTEM) ?: THEME_SYSTEM)
     val themeMode: StateFlow<String> = _themeMode.asStateFlow()
 
+    private val _fontSize = MutableStateFlow(prefs.getString(KEY_FONT_SIZE, FONT_SIZE_MEDIUM) ?: FONT_SIZE_MEDIUM)
+    val fontSize: StateFlow<String> = _fontSize.asStateFlow()
+
     fun getRatePerKmSync(): Double {
         return prefs.getFloat(KEY_RATE_PER_KM, DEFAULT_RATE).toDouble()
     }
@@ -68,6 +71,11 @@ class UserPreferencesRepository(context: Context) {
         _themeMode.value = mode
     }
 
+    fun setFontSize(size: String) {
+        prefs.edit().putString(KEY_FONT_SIZE, size).apply()
+        _fontSize.value = size
+    }
+
     companion object {
         private const val KEY_RATE_PER_KM = "rate_per_km"
         private const val KEY_DRIVER_NAME = "driver_name"
@@ -76,10 +84,15 @@ class UserPreferencesRepository(context: Context) {
         private const val KEY_EMPLOYEE_TYPE = "employee_type"
         private const val KEY_PROFILE_IMAGE_URI = "profile_image_uri"
         private const val KEY_THEME_MODE = "theme_mode"
+        private const val KEY_FONT_SIZE = "font_size"
 
         const val THEME_SYSTEM = "SYSTEM"
         const val THEME_LIGHT = "LIGHT"
         const val THEME_DARK = "DARK"
+
+        const val FONT_SIZE_SMALL = "SMALL"
+        const val FONT_SIZE_MEDIUM = "MEDIUM"
+        const val FONT_SIZE_LARGE = "LARGE"
 
         const val DEFAULT_RATE = 104.0f
     }
