@@ -95,7 +95,7 @@ class MainActivity : ComponentActivity() {
                 onDispose {}
             }
 
-            DailyRunnerTheme(themeMode = settingsUiState.themeMode) {
+            DailyRunnerTheme(themeMode = settingsUiState.themeMode, fontSize = settingsUiState.fontSize) {
                 val navController = rememberNavController()
                 val snackbarHostState = remember { SnackbarHostState() }
 

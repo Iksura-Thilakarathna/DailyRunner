@@ -8,8 +8,11 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 
 private val DarkColorScheme = darkColorScheme(
     primary = PurplePrimary,
@@ -50,6 +53,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun DailyRunnerTheme(
     themeMode: String = "SYSTEM",
+    fontSize: String = "MEDIUM",
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
@@ -69,9 +73,25 @@ fun DailyRunnerTheme(
         else -> LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
+    val scaleFactor = when (fontSize) {
+        "SMALL" -> 0.88f
+        "LARGE" -> 1.15f
+        else -> 1.0f
+    }
+
+    val currentDensity = LocalDensity.current
+    val customDensity = Density(
+        density = currentDensity.density,
+        fontScale = currentDensity.fontScale * scaleFactor
     )
+
+    CompositionLocalProvider(
+        LocalDensity provides customDensity
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
