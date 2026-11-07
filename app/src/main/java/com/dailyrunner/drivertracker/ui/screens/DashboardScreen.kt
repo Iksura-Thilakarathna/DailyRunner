@@ -8,7 +8,14 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import com.dailyrunner.drivertracker.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -126,7 +133,7 @@ fun DashboardScreen(
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        // Mockup Header: Driver Name, Vehicle Number, Daily Runner badge
+        // Mockup Header: Driver Name, Vehicle Number, Original APK Logo
         TopDriverHeader(uiState = uiState)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -512,27 +519,58 @@ fun TopDriverHeader(uiState: DashboardUiState) {
             )
         }
 
-        // Daily Runner Badge
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(horizontal = 12.dp, vertical = 6.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.DirectionsRun,
-                contentDescription = null,
-                tint = Color(0xFFFBBF24),
-                modifier = Modifier.size(16.dp)
+        // Original APK Logo
+        val context = LocalContext.current
+        val appLogoBitmap = remember(context) {
+            try {
+                val drawable = context.packageManager.getApplicationIcon(context.packageName)
+                val size = 120
+                val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+                val canvas = android.graphics.Canvas(bitmap)
+                drawable.setBounds(0, 0, canvas.width, canvas.height)
+                drawable.draw(canvas)
+                bitmap.asImageBitmap()
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        if (appLogoBitmap != null) {
+            Image(
+                bitmap = appLogoBitmap,
+                contentDescription = "Daily Runner Logo",
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 1.5.dp,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                        shape = CircleShape
+                    )
             )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = "Daily Runner",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 1.5.dp,
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_launcher_background),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                    contentDescription = "Daily Runner Logo",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     }
 }
