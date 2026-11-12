@@ -11,7 +11,9 @@ import androidx.compose.animation.shrinkVertically
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import com.dailyrunner.drivertracker.ui.theme.LocalDailyRunnerColors
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -88,8 +90,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import com.dailyrunner.drivertracker.ui.theme.PaidGreen
-import com.dailyrunner.drivertracker.ui.theme.PaidGreenBg
 import com.dailyrunner.drivertracker.ui.viewmodel.DashboardUiState
 import com.dailyrunner.drivertracker.ui.viewmodel.DashboardViewModel
 import com.dailyrunner.drivertracker.ui.viewmodel.DayTab
@@ -99,15 +99,6 @@ import java.util.Locale
 
 import androidx.compose.material.icons.filled.DirectionsRun
 import androidx.compose.ui.graphics.Brush
-import com.dailyrunner.drivertracker.ui.theme.DarkCardBg
-import com.dailyrunner.drivertracker.ui.theme.DarkInputBg
-import com.dailyrunner.drivertracker.ui.theme.OutlineBorder
-import com.dailyrunner.drivertracker.ui.theme.PurpleGradientEnd
-import com.dailyrunner.drivertracker.ui.theme.PurpleGradientStart
-import com.dailyrunner.drivertracker.ui.theme.PurplePrimary
-import com.dailyrunner.drivertracker.ui.theme.TextMuted
-import com.dailyrunner.drivertracker.ui.theme.TextPrimary
-import com.dailyrunner.drivertracker.ui.theme.TextSecondary
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -126,6 +117,7 @@ fun DashboardScreen(
     }
 
     val scrollState = rememberScrollState()
+    val extendedColors = LocalDailyRunnerColors.current
 
     Column(
         modifier = Modifier
@@ -158,7 +150,8 @@ fun DashboardScreen(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            border = BorderStroke(1.dp, extendedColors.cardBorder),
+            elevation = CardDefaults.cardElevation(defaultElevation = if (extendedColors.isDark) 4.dp else 1.dp)
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
@@ -201,7 +194,7 @@ fun DashboardScreen(
                     }
                 }
 
-                HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                HorizontalDivider(color = extendedColors.cardBorder)
 
                 // "No Work Today" Quick Switch
                 Row(
@@ -209,8 +202,13 @@ fun DashboardScreen(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(16.dp))
                         .background(
-                            if (uiState.isNoWork) MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
-                            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                            if (uiState.isNoWork) MaterialTheme.colorScheme.errorContainer
+                            else extendedColors.nestedSurface
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = if (uiState.isNoWork) MaterialTheme.colorScheme.error.copy(alpha = 0.4f) else extendedColors.cardBorder,
+                            shape = RoundedCornerShape(16.dp)
                         )
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -260,21 +258,22 @@ fun DashboardScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(PaidGreenBg)
+                                    .background(extendedColors.paidBg)
+                                    .border(1.dp, extendedColors.paidBorder, RoundedCornerShape(12.dp))
                                     .padding(horizontal = 12.dp, vertical = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Info,
                                     contentDescription = null,
-                                    tint = PaidGreen,
+                                    tint = extendedColors.paidText,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = "Start KM auto-filled from previous trip's end KM (${uiState.previousEndKmPrefill})",
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                    color = extendedColors.prefillText
                                 )
                             }
                         }
@@ -307,7 +306,7 @@ fun DashboardScreen(
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                    unfocusedBorderColor = extendedColors.inputBorder
                                 )
                             )
 
@@ -335,7 +334,7 @@ fun DashboardScreen(
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                    unfocusedBorderColor = extendedColors.inputBorder
                                 )
                             )
                         }
@@ -395,7 +394,7 @@ fun DashboardScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                    unfocusedBorderColor = extendedColors.inputBorder
                                 )
                             )
 
@@ -435,7 +434,12 @@ fun DashboardScreen(
                                             )
                                         },
                                         colors = InputChipDefaults.inputChipColors(
-                                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                                            containerColor = extendedColors.nestedSurface
+                                        ),
+                                        border = InputChipDefaults.inputChipBorder(
+                                            enabled = true,
+                                            selected = false,
+                                            borderColor = extendedColors.cardBorder
                                         )
                                     )
                                 }
@@ -452,7 +456,7 @@ fun DashboardScreen(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
                             colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                                unfocusedBorderColor = extendedColors.inputBorder
                             )
                         )
                     }
@@ -470,7 +474,7 @@ fun DashboardScreen(
                         .height(54.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (uiState.isNoWork) MaterialTheme.colorScheme.error else PurplePrimary,
+                        containerColor = if (uiState.isNoWork) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                         contentColor = Color.White
                     ),
                     enabled = !uiState.isSaving
@@ -577,6 +581,7 @@ fun TopDriverHeader(uiState: DashboardUiState) {
 
 @Composable
 fun EarningsSummaryCard(uiState: DashboardUiState) {
+    val extendedColors = LocalDailyRunnerColors.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -584,8 +589,8 @@ fun EarningsSummaryCard(uiState: DashboardUiState) {
             .background(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
-                        Color(0xFF6A26CD),
-                        Color(0xFF9E77ED)
+                        extendedColors.heroStart,
+                        extendedColors.heroEnd
                     )
                 )
             )
@@ -669,13 +674,16 @@ fun DaySwitcherTabs(
     onTabSelected: (DayTab) -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
+    val extendedColors = LocalDailyRunnerColors.current
 
     PrimaryTabRow(
         selectedTabIndex = if (selectedTab == DayTab.TODAY) 0 else 1,
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp)),
-        containerColor = MaterialTheme.colorScheme.surfaceVariant
+            .clip(RoundedCornerShape(16.dp))
+            .border(1.dp, extendedColors.cardBorder, RoundedCornerShape(16.dp)),
+        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.primary
     ) {
         Tab(
             selected = selectedTab == DayTab.TODAY,
@@ -685,6 +693,8 @@ fun DaySwitcherTabs(
                     onTabSelected(DayTab.TODAY)
                 }
             },
+            selectedContentColor = MaterialTheme.colorScheme.primary,
+            unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             text = {
                 Text(
                     text = "Today (${PayPeriodUtils.formatShortDate(PayPeriodUtils.getTodayIso())})",
@@ -700,6 +710,8 @@ fun DaySwitcherTabs(
                     onTabSelected(DayTab.YESTERDAY)
                 }
             },
+            selectedContentColor = MaterialTheme.colorScheme.primary,
+            unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             text = {
                 Text(
                     text = "Yesterday (${PayPeriodUtils.formatShortDate(PayPeriodUtils.getYesterdayIso())})",
@@ -716,10 +728,12 @@ fun LiveCalculationPill(
     ratePerKm: Double,
     totalEarnings: Double
 ) {
+    val extendedColors = LocalDailyRunnerColors.current
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        color = extendedColors.nestedSurface,
+        border = BorderStroke(1.dp, extendedColors.cardBorder)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),

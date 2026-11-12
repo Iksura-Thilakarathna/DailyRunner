@@ -3,7 +3,9 @@ package com.dailyrunner.drivertracker.ui.screens
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import com.dailyrunner.drivertracker.ui.theme.LocalDailyRunnerColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,7 +38,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.dailyrunner.drivertracker.ui.theme.PurplePrimary
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.DarkMode
@@ -142,10 +143,10 @@ fun SettingsScreen(
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        text = "Version 1.0.0",
+                        text = "DailyRunner v1.0.0 — Offline Driver Mileage & Pay Tracker",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = PurplePrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = "DailyRunner is a specialized driver mileage and weekly pay tracking tool built for delivery and contract drivers.",
@@ -162,7 +163,7 @@ fun SettingsScreen(
             confirmButton = {
                 Button(
                     onClick = { showAboutDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text("Close", fontWeight = FontWeight.Bold)
@@ -216,6 +217,7 @@ fun SettingsScreen(
     }
 
     val scrollState = rememberScrollState()
+    val extendedColors = LocalDailyRunnerColors.current
 
     Column(
         modifier = Modifier
@@ -268,7 +270,7 @@ fun SettingsScreen(
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "Profile",
-                            tint = PurplePrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(26.dp)
                         )
                     }
@@ -282,7 +284,8 @@ fun SettingsScreen(
                 .fillMaxWidth()
                 .clickable { viewModel.openEditProfileDialog() },
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            border = BorderStroke(1.dp, LocalDailyRunnerColors.current.cardBorder)
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Row(
@@ -303,7 +306,7 @@ fun SettingsScreen(
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = "Edit Profile",
-                            tint = PurplePrimary,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -359,7 +362,8 @@ fun SettingsScreen(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            border = BorderStroke(1.dp, LocalDailyRunnerColors.current.cardBorder),
+            elevation = CardDefaults.cardElevation(defaultElevation = if (LocalDailyRunnerColors.current.isDark) 2.dp else 1.dp)
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
@@ -412,7 +416,8 @@ fun SettingsScreen(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            border = BorderStroke(1.dp, LocalDailyRunnerColors.current.cardBorder)
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
@@ -426,14 +431,14 @@ fun SettingsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Surface(
                             shape = CircleShape,
-                            color = PurplePrimary.copy(alpha = 0.15f),
+                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                             modifier = Modifier.size(36.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Icon(
                                     imageVector = Icons.Default.AttachMoney,
                                     contentDescription = null,
-                                    tint = PurplePrimary,
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -450,7 +455,7 @@ fun SettingsScreen(
 
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = PurplePrimary.copy(alpha = 0.1f),
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -467,7 +472,7 @@ fun SettingsScreen(
                             text = "Rs. ${String.format(Locale.ENGLISH, "%.2f", uiState.currentRatePerKm)} / KM",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
-                            color = PurplePrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -488,9 +493,9 @@ fun SettingsScreen(
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedTextColor = MaterialTheme.colorScheme.onSurface,
                             unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            focusedBorderColor = PurplePrimary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                            focusedLabelColor = PurplePrimary,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = LocalDailyRunnerColors.current.inputBorder,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
                             unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
@@ -499,7 +504,7 @@ fun SettingsScreen(
                         onClick = { viewModel.saveRate() },
                         modifier = Modifier.height(56.dp),
                         shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary)
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
                         Icon(imageVector = Icons.Default.Save, contentDescription = null)
                         Spacer(modifier = Modifier.width(6.dp))
@@ -516,7 +521,8 @@ fun SettingsScreen(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            border = BorderStroke(1.dp, LocalDailyRunnerColors.current.cardBorder),
+            elevation = CardDefaults.cardElevation(defaultElevation = if (LocalDailyRunnerColors.current.isDark) 2.dp else 1.dp)
         ) {
             Column(
                 modifier = Modifier.padding(20.dp),
@@ -619,7 +625,8 @@ fun SettingsMenuItemCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            border = BorderStroke(1.dp, LocalDailyRunnerColors.current.cardBorder)
     ) {
         Row(
             modifier = Modifier
@@ -689,7 +696,7 @@ fun EditVehicleDialog(
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        unfocusedBorderColor = LocalDailyRunnerColors.current.inputBorder,
                         focusedLabelColor = MaterialTheme.colorScheme.primary,
                         unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -699,7 +706,7 @@ fun EditVehicleDialog(
         confirmButton = {
             Button(
                 onClick = { onSave(vehicle) },
-                colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text("Save", fontWeight = FontWeight.Bold)
@@ -754,9 +761,9 @@ fun EditProfileDialog(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        focusedBorderColor = PurplePrimary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                        focusedLabelColor = PurplePrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = LocalDailyRunnerColors.current.inputBorder,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
                         unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
@@ -771,9 +778,9 @@ fun EditProfileDialog(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        focusedBorderColor = PurplePrimary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                        focusedLabelColor = PurplePrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = LocalDailyRunnerColors.current.inputBorder,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
                         unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
@@ -789,9 +796,9 @@ fun EditProfileDialog(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        focusedBorderColor = PurplePrimary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                        focusedLabelColor = PurplePrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = LocalDailyRunnerColors.current.inputBorder,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
                         unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
@@ -806,9 +813,9 @@ fun EditProfileDialog(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        focusedBorderColor = PurplePrimary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                        focusedLabelColor = PurplePrimary,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = LocalDailyRunnerColors.current.inputBorder,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
                         unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
@@ -823,7 +830,7 @@ fun EditProfileDialog(
                     val finalEmpType = empType.trim().ifEmpty { currentEmpType }
                     onSave(finalName, finalVehicle, finalPhone, finalEmpType)
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text("Save Details", fontWeight = FontWeight.Bold)
@@ -860,7 +867,7 @@ fun AppearanceDialog(
                 Icon(
                     imageVector = Icons.Default.Palette,
                     contentDescription = null,
-                    tint = PurplePrimary,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
@@ -883,7 +890,7 @@ fun AppearanceDialog(
                         text = "THEME MODE (DARK & WHITE)",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = PurplePrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
 
                     val themeOptions = listOf(
@@ -904,10 +911,10 @@ fun AppearanceDialog(
                                     .height(48.dp)
                                     .clickable { onThemeChange(mode) },
                                 shape = RoundedCornerShape(12.dp),
-                                color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else LocalDailyRunnerColors.current.nestedSurface,
                                 border = androidx.compose.foundation.BorderStroke(
                                     width = if (isSelected) 2.dp else 1.dp,
-                                    color = if (isSelected) PurplePrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else LocalDailyRunnerColors.current.cardBorder
                                 )
                             ) {
                                 Row(
@@ -919,7 +926,7 @@ fun AppearanceDialog(
                                         imageVector = icon,
                                         contentDescription = label,
                                         modifier = Modifier.size(16.dp),
-                                        tint = if (isSelected) PurplePrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                        tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
@@ -940,7 +947,7 @@ fun AppearanceDialog(
                         text = "FONT SIZE",
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = PurplePrimary
+                        color = MaterialTheme.colorScheme.primary
                     )
 
                     val fontOptions = listOf(
@@ -961,10 +968,10 @@ fun AppearanceDialog(
                                     .height(48.dp)
                                     .clickable { onFontSizeChange(sizeKey) },
                                 shape = RoundedCornerShape(12.dp),
-                                color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else LocalDailyRunnerColors.current.nestedSurface,
                                 border = androidx.compose.foundation.BorderStroke(
                                     width = if (isSelected) 2.dp else 1.dp,
-                                    color = if (isSelected) PurplePrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else LocalDailyRunnerColors.current.cardBorder
                                 )
                             ) {
                                 Row(
@@ -976,7 +983,7 @@ fun AppearanceDialog(
                                         text = symbol,
                                         style = MaterialTheme.typography.bodySmall,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (isSelected) PurplePrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
@@ -995,7 +1002,8 @@ fun AppearanceDialog(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            border = BorderStroke(1.dp, LocalDailyRunnerColors.current.cardBorder)
                 ) {
                     Column(
                         modifier = Modifier.padding(14.dp),
@@ -1005,7 +1013,7 @@ fun AppearanceDialog(
                             text = "LIVE PREVIEW",
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.Bold,
-                            color = PurplePrimary
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             text = "Daily Runner Pay Rate: Rs. ${String.format(Locale.ENGLISH, "%.1f", sampleRate)} / KM",
@@ -1025,7 +1033,7 @@ fun AppearanceDialog(
         confirmButton = {
             Button(
                 onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Text("Done", fontWeight = FontWeight.Bold)

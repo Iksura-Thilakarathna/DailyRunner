@@ -12,7 +12,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import com.dailyrunner.drivertracker.ui.theme.LocalDailyRunnerColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,12 +51,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SnackbarHostState
-import com.dailyrunner.drivertracker.ui.theme.DarkCardBg
-import com.dailyrunner.drivertracker.ui.theme.DarkInputBg
-import com.dailyrunner.drivertracker.ui.theme.ErrorRed
-import com.dailyrunner.drivertracker.ui.theme.PaidGreen
-import com.dailyrunner.drivertracker.ui.theme.TextPrimary
-import com.dailyrunner.drivertracker.ui.theme.TextSecondary
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -80,6 +76,7 @@ fun HistoryScreen(
     snackbarHostState: SnackbarHostState
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val extendedColors = LocalDailyRunnerColors.current
 
     LaunchedEffect(Unit) {
         viewModel.messageEvent.collectLatest { msg ->
@@ -163,7 +160,8 @@ fun HistoryScreen(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.surface,
+                border = BorderStroke(1.dp, extendedColors.cardBorder)
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
@@ -269,7 +267,9 @@ fun HistoryScreen(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedBorderColor = extendedColors.inputBorder
             )
         )
 
@@ -339,6 +339,8 @@ fun HistoryTripCard(
         String.format(Locale.ENGLISH, "%,.2f", trip.totalEarnings)
     }
 
+    val extendedColors = LocalDailyRunnerColors.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -350,7 +352,8 @@ fun HistoryTripCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        border = BorderStroke(1.dp, extendedColors.cardBorder),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (extendedColors.isDark) 2.dp else 1.dp)
     ) {
         Column(
             modifier = Modifier
@@ -365,7 +368,8 @@ fun HistoryTripCard(
                 // Left Date Badge Box
                 Surface(
                     shape = RoundedCornerShape(14.dp),
-                    color = MaterialTheme.colorScheme.surface,
+                    color = extendedColors.nestedSurface,
+                    border = BorderStroke(1.dp, extendedColors.cardBorder),
                     modifier = Modifier.size(54.dp)
                 ) {
                     Column(
@@ -398,7 +402,7 @@ fun HistoryTripCard(
                         text = distanceDisplay,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = if (trip.isNoWork) ErrorRed else MaterialTheme.colorScheme.onSurface
+                        color = if (trip.isNoWork) extendedColors.errorText else MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
@@ -417,7 +421,7 @@ fun HistoryTripCard(
                         text = earningsDisplay,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.ExtraBold,
-                        color = PaidGreen
+                        color = extendedColors.paidText
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Icon(
@@ -440,7 +444,7 @@ fun HistoryTripCard(
                         .fillMaxWidth()
                         .padding(top = 12.dp)
                 ) {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                    HorizontalDivider(color = extendedColors.cardBorder)
 
                     Spacer(modifier = Modifier.height(10.dp))
 

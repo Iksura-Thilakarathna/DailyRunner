@@ -6,7 +6,10 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import com.dailyrunner.drivertracker.ui.theme.LocalDailyRunnerColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,9 +37,6 @@ import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.AlertDialog
-import com.dailyrunner.drivertracker.ui.theme.DarkCardBg
-import com.dailyrunner.drivertracker.ui.theme.PurplePrimary
-import com.dailyrunner.drivertracker.ui.theme.TextPrimary
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -72,12 +72,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dailyrunner.drivertracker.data.repository.WeeklyChequeSummary
-import com.dailyrunner.drivertracker.ui.theme.OnPaidGreen
-import com.dailyrunner.drivertracker.ui.theme.OnUnpaidAmber
-import com.dailyrunner.drivertracker.ui.theme.PaidGreen
-import com.dailyrunner.drivertracker.ui.theme.PaidGreenBg
-import com.dailyrunner.drivertracker.ui.theme.UnpaidAmber
-import com.dailyrunner.drivertracker.ui.theme.UnpaidAmberBg
 import com.dailyrunner.drivertracker.ui.viewmodel.ChequeFilter
 import com.dailyrunner.drivertracker.ui.viewmodel.WeeklyChequesViewModel
 import com.dailyrunner.drivertracker.util.PayPeriodUtils
@@ -94,6 +88,7 @@ fun WeeklyChequesScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var showAddPaymentInfoDialog by remember { mutableStateOf(false) }
+    val extendedColors = LocalDailyRunnerColors.current
 
     LaunchedEffect(Unit) {
         viewModel.messageEvent.collectLatest { msg ->
@@ -108,7 +103,7 @@ fun WeeklyChequesScreen(
                 Text(
                     text = "Weekly Payment Cycle",
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
             text = {
@@ -124,7 +119,7 @@ fun WeeklyChequesScreen(
                         showAddPaymentInfoDialog = false
                         onNavigateToDashboard()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = PurplePrimary)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Text("Log Trip Now", fontWeight = FontWeight.Bold, color = Color.White)
                 }
@@ -134,7 +129,7 @@ fun WeeklyChequesScreen(
                     Text("Got It", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             },
-            containerColor = DarkCardBg,
+            containerColor = MaterialTheme.colorScheme.surface,
             shape = RoundedCornerShape(20.dp)
         )
     }
@@ -158,7 +153,7 @@ fun WeeklyChequesScreen(
             confirmButton = {
                 Button(
                     onClick = { viewModel.confirmUnpaidToggle() },
-                    colors = ButtonDefaults.buttonColors(containerColor = UnpaidAmber)
+                    colors = ButtonDefaults.buttonColors(containerColor = extendedColors.unpaidText)
                 ) {
                     Text("Yes, Mark Unpaid", color = Color.White, fontWeight = FontWeight.Bold)
                 }
@@ -205,12 +200,12 @@ fun WeeklyChequesScreen(
             Tab(
                 selected = uiState.selectedFilter == ChequeFilter.UNPAID,
                 onClick = { viewModel.selectFilter(ChequeFilter.UNPAID) },
-                text = { Text("Unpaid", fontWeight = FontWeight.Bold, color = UnpaidAmber) }
+                text = { Text("Unpaid", fontWeight = FontWeight.Bold, color = extendedColors.unpaidText) }
             )
             Tab(
                 selected = uiState.selectedFilter == ChequeFilter.PAID,
                 onClick = { viewModel.selectFilter(ChequeFilter.PAID) },
-                text = { Text("Paid", fontWeight = FontWeight.Bold, color = PaidGreen) }
+                text = { Text("Paid", fontWeight = FontWeight.Bold, color = extendedColors.paidText) }
             )
         }
 
@@ -252,7 +247,7 @@ fun WeeklyChequesScreen(
                     Text(
                         text = "Log daily trips to populate Friday–Thursday pay periods.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -317,7 +312,7 @@ fun WeeklyChequesScreen(
                 .height(52.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = PurplePrimary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = Color.White
             )
         ) {
@@ -345,6 +340,7 @@ fun WeeklyChequeCard(
     val formattedDistance = remember(summary.totalDistanceKm) {
         String.format(Locale.ENGLISH, "%.1f", summary.totalDistanceKm)
     }
+    val extendedColors = LocalDailyRunnerColors.current
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -352,7 +348,8 @@ fun WeeklyChequeCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        border = BorderStroke(1.dp, extendedColors.cardBorder),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (extendedColors.isDark) 2.dp else 1.dp)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -384,7 +381,7 @@ fun WeeklyChequeCard(
                         modifier = Modifier
                             .clip(CircleShape)
                             .clickable { onCopy() },
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                        color = extendedColors.nestedSurface
                     ) {
                         Box(modifier = Modifier.padding(8.dp)) {
                             Icon(
@@ -403,7 +400,7 @@ fun WeeklyChequeCard(
                         modifier = Modifier
                             .clip(CircleShape)
                             .clickable { onShare() },
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                        color = extendedColors.nestedSurface
                     ) {
                         Box(modifier = Modifier.padding(8.dp)) {
                             Icon(
@@ -422,7 +419,7 @@ fun WeeklyChequeCard(
                         modifier = Modifier
                             .clip(CircleShape)
                             .clickable { onToggleExpand() },
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                        color = extendedColors.nestedSurface
                     ) {
                         Box(modifier = Modifier.padding(8.dp)) {
                             Icon(
@@ -496,7 +493,9 @@ fun WeeklyChequeCard(
                             cardHaptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             onTogglePayment()
                         },
-                    color = PaidGreenBg
+                    shape = RoundedCornerShape(14.dp),
+                    color = extendedColors.paidBg,
+                    border = BorderStroke(1.dp, extendedColors.paidBorder)
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -506,7 +505,7 @@ fun WeeklyChequeCard(
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = PaidGreen
+                            tint = extendedColors.paidText
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         val paidDateStr = PayPeriodUtils.formatTimestamp(summary.paidAt)
@@ -514,7 +513,7 @@ fun WeeklyChequeCard(
                             text = if (paidDateStr.isNotBlank()) "Paid on $paidDateStr ✓ (Tap to change)" else "Paid ✓ (Tap to change)",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
-                            color = OnPaidGreen
+                            color = extendedColors.paidText
                         )
                     }
                 }
@@ -529,22 +528,23 @@ fun WeeklyChequeCard(
                         .fillMaxWidth()
                         .height(48.dp),
                     shape = RoundedCornerShape(14.dp),
+                    border = BorderStroke(1.dp, extendedColors.unpaidBorder),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = UnpaidAmberBg,
-                        contentColor = OnUnpaidAmber
+                        containerColor = extendedColors.unpaidBg,
+                        contentColor = extendedColors.unpaidText
                     )
                 ) {
                     Icon(
                         imageVector = Icons.Default.HourglassEmpty,
                         contentDescription = null,
-                        tint = UnpaidAmber
+                        tint = extendedColors.unpaidText
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Mark as Paid ✓",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
-                        color = OnUnpaidAmber
+                        color = extendedColors.unpaidText
                     )
                 }
             }
@@ -558,7 +558,7 @@ fun WeeklyChequeCard(
                 Column(
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
-                    HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+                    HorizontalDivider(color = extendedColors.cardBorder)
 
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -595,7 +595,8 @@ fun WeeklyChequeCard(
                             if (trip.isNoWork) {
                                 Surface(
                                     shape = RoundedCornerShape(8.dp),
-                                    color = MaterialTheme.colorScheme.surfaceVariant
+                                    color = extendedColors.nestedSurface,
+                                    border = BorderStroke(1.dp, extendedColors.cardBorder)
                                 ) {
                                     Text(
                                         text = "OFF",
